@@ -1,10 +1,9 @@
 ## Hi there 👋
 
-Chief Information Officer (CIO) at one of France’s leading universities, with international professional experience and active involvement in European higher education and research networks.
+**Chief Information Officer (CIO)** at one of France’s leading universities, with international professional experience and active involvement in European higher education and research networks.
 
-Passionate about amateur development and contributing to open-source projects for the joy of creating, improving, and giving visibility to overlooked tools.
-
-This space is where I occasionally share **personal reflections** on software development, IT governance, and professional experiences—always behind the comfort of a pseudonym.
+Passionate about amateur development and contributing to open-source projects—**wherever the code lives**—for the joy of creating, improving, and giving visibility to overlooked tools. I currently use **both GitHub and GitLab** to collaborate, test pipelines, and experiment with CI/CD workflows, but I remain platform-agnostic and open to evolving with the best tools for the job.
+This space is where I occasionally share **personal reflections** on software development, IT governance, and techincal experiences—always behind the comfort of a pseudonym.
 
 <!--
 **biface/biface** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
