@@ -4,9 +4,9 @@
 
 Passionate about amateur development and contributing to open-source projects—**wherever the code lives**—for the joy of creating, improving, and giving visibility to overlooked tools. I currently use **both GitHub and GitLab** to collaborate, test pipelines, and experiment with CI/CD workflows, but I remain platform-agnostic and open to evolving with the best tools for the job.
 
-In my free time, I work on several **Python **projects, exploring:
+In my free time, I work on several **Python** projects, exploring:
 
-- [**Nested dictionaries**](https://github.com/biface/ndt) and advanced data structures (graphs, trees, stacks, etc.),
+- [**Nested dictionaries**](https://github.com/biface/ndt) and simple advanced data structures (graphs, trees, stacks, etc.),
 - **Translation management**, inspired by Babel, with support for multiple translations and plural forms,
 - **Upcoming projects** related to frameworks like Django.
 
