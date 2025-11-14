@@ -1,0 +1,35 @@
+name: Python CI - Tests
+
+on:
+  push:
+    branches:
+      - "**"  # Toutes les branches (feature/*, hotfix/*, updates/*, staging-*)
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    name: Run tests on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox
+
+    - name: Run tests with tox
+      run: tox -e gh-ci
