@@ -1,0 +1,42 @@
+name: Python CI - Coverage
+
+on:
+  workflow_run:
+    workflows: ["Python CI - Tests"]
+    types:
+      - completed
+    branches:
+      - "updates/**"     # Toutes les branches de versions (updates/1.0.0, updates/1.1.0, etc.)
+      - "staging/**"     # Toutes les branches de staging (staging/1.0.x, staging/1.1.x, etc.)
+      - main
+      - master
+
+jobs:
+  coverage:
+    name: Upload coverage to Codecov
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox
+
+    - name: Run tests with coverage
+      run: tox -e gh-ci
+
+    - name: Upload coverage reports to Codecov
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true

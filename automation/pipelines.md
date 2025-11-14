@@ -23,9 +23,10 @@ The pipelines described in this documentation serve several key objectives:
 
 The following pipelines are documented in this repository:
 
-1. **Python CI - Tests** \[[Français](python/tests.fr.md)]\[[English](python/tests.en.md)]: Automated testing across
-   multiple Python versions to ensure compatibility and code quality
-2. **Python CI - Coverage** : 
+1. **Python CI - Tests** \[[Français](python/tests.fr.md)]\[[English](python/tests.en.md)]: Automated [testing across
+   multiple Python versions](../shared/tests.txt) to ensure compatibility and code quality 
+2. **Python CI - Coverage** \[[Français](python/coverage.fr.md)]\[[English](python/coverage.en.md)]: Automated 
+   [measures of a Python project's code coverage](../shared/coverage.txt) and automatically uploads reports to Codecov
 
 *(Additional pipelines will be documented as they are added)*
 
@@ -37,4 +38,5 @@ Each pipeline is documented with:
 - Detailed step-by-step explanations of each action
 - Expected outcomes and results
 
-Navigate through the sections below to explore each pipeline in detail.
+Navigate through the sections below to explore each pipeline in detail. Some of these processes will require additional
+information about the third-party tools used (such as tox with python), which I will publish shortly.
