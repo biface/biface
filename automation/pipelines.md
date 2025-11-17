@@ -13,7 +13,7 @@ testing, code quality checks, and deployment processes.
 
 The pipelines described in this documentation serve several key objectives:
 
-- **Automation**: Reduce manual intervention by automating repetitive tasks such as testing and deployment
+- **Automation**: Reduce manual intervention by automating repetitive tasks [such as testing](automation.md) and deployment
 - **Quality Assurance**: Ensure code quality and compatibility across different environments before merging changes
 - **Continuous Integration**: Validate every code change automatically to catch issues early in the development cycle
 - **Consistency**: Maintain standardized processes across all branches and contributions

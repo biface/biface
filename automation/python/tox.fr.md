@@ -210,6 +210,29 @@ Environnement combiné qui applique **à la fois** Black et isort pour un format
 ```ini
 [testenv:pre-push]
 description = Complete local workflow before push (format + checks + tests)
+deps =
+    -r requirements.test.txt
+    mypy
+commands =
+    # 1. Auto-formatting
+    black src tests
+    isort src tests
+    
+    # 2. Type checking
+    mypy src
+    
+    # 3. Linting
+    flake8 src tests
+    
+    # 4. Security
+    bandit -r src
+    
+    # 5. Tests with coverage
+    pytest --import-mode=importlib \
+           --cov=ndict_tools \
+           --cov-report=term-missing \
+           --cov-report=xml:coverage/coverage.xml \
+           --cov-report=html:coverage/coverage_html tests
 ```
 
 Environnement **complet** à exécuter avant de pousser du code. Il combine :
@@ -218,7 +241,7 @@ Environnement **complet** à exécuter avant de pousser du code. Il combine :
 2. **Vérification des types** : mypy
 3. **Linting** : flake8
 4. **Sécurité** : bandit
-5. **Tests avec couverture** : pytest
+5. **Tests et couverture** : pytest avec les conditions de production des différents éléments vus plus haut.
 
 **Usage** : `tox -e pre-push` avant chaque `git push` pour garantir la qualité.
 
@@ -227,6 +250,16 @@ Environnement **complet** à exécuter avant de pousser du code. Il combine :
 ```ini
 [testenv:ci-quality]
 description = CI quality checks (no auto-fix, only verify)
+deps =
+    -r requirements.test.txt
+    mypy
+commands =
+    # Vérifications sans modification
+    mypy src
+    flake8 src tests
+    black --check --diff src tests
+    isort --check-only --diff src tests
+    bandit -r src
 ```
 
 Version CI/CD qui **vérifie** sans modifier :
@@ -240,6 +273,14 @@ Parfait pour un pipeline CI qui doit échouer si le code n'est pas conforme.
 ```ini
 [testenv:ci-tests]
 description = CI tests with coverage (used by gh-actions matrix)
+deps =
+    -r requirements.test.txt
+commands =
+    pytest --import-mode=importlib \
+           --cov=ndict_tools \
+           --cov-report=term-missing \
+           --cov-report=xml:coverage/coverage.xml \
+           --cov-report=html:coverage/coverage_html tests
 ```
 
 Environnement simplifié utilisé par la matrice GitHub Actions. Exécute uniquement les tests avec couverture, sans les vérifications de qualité.
@@ -352,6 +393,11 @@ run: tox -e ci-quality
 ```
 
 ---
+
+## Ressources complémentaires
+
+* Fichier de configuration de tox [`tox.ini`](../../shared/tox_ini.txt)
+* Fichier des packages requis [`requiremenets.test.txt`](../../shared/requirements.test.txt)
 
 ## Avantages de cette Configuration
 
