@@ -210,6 +210,29 @@ Combined environment that applies **both** Black and isort for complete formatti
 ```ini
 [testenv:pre-push]
 description = Complete local workflow before push (format + checks + tests)
+deps =
+    -r requirements.test.txt
+    mypy
+commands =
+    # 1. Auto-formatting
+    black src tests
+    isort src tests
+    
+    # 2. Type checking
+    mypy src
+    
+    # 3. Linting
+    flake8 src tests
+    
+    # 4. Security
+    bandit -r src
+    
+    # 5. Tests with coverage
+    pytest --import-mode=importlib \
+           --cov=ndict_tools \
+           --cov-report=term-missing \
+           --cov-report=xml:coverage/coverage.xml \
+           --cov-report=html:coverage/coverage_html tests
 ```
 
 **Complete** environment to execute before pushing code. It combines:
@@ -218,7 +241,7 @@ description = Complete local workflow before push (format + checks + tests)
 2. **Type checking**: mypy
 3. **Linting**: flake8
 4. **Security**: bandit
-5. **Tests with coverage**: pytest
+5. **Tests with coverage**: pytest with the production conditions of the various elements seen above.
 
 **Usage**: `tox -e pre-push` before each `git push` to guarantee quality.
 
@@ -227,6 +250,16 @@ description = Complete local workflow before push (format + checks + tests)
 ```ini
 [testenv:ci-quality]
 description = CI quality checks (no auto-fix, only verify)
+deps =
+    -r requirements.test.txt
+    mypy
+commands =
+    # Vérifications sans modification
+    mypy src
+    flake8 src tests
+    black --check --diff src tests
+    isort --check-only --diff src tests
+    bandit -r src
 ```
 
 CI/CD version that **checks** without modifying:
@@ -240,6 +273,14 @@ Perfect for a CI pipeline that should fail if code is not compliant.
 ```ini
 [testenv:ci-tests]
 description = CI tests with coverage (used by gh-actions matrix)
+deps =
+    -r requirements.test.txt
+commands =
+    pytest --import-mode=importlib \
+           --cov=ndict_tools \
+           --cov-report=term-missing \
+           --cov-report=xml:coverage/coverage.xml \
+           --cov-report=html:coverage/coverage_html tests
 ```
 
 Simplified environment used by GitHub Actions matrix. Executes only tests with coverage, without quality checks.
