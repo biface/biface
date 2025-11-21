@@ -3,6 +3,7 @@
 ## What is Tox?
 
 **Tox** is a Python test automation tool that allows you to:
+
 - Create **isolated virtual environments** for each test configuration
 - Test your code across **multiple Python versions** simultaneously
 - Execute **standardized command suites** (tests, linting, formatting)
@@ -11,16 +12,22 @@
 ### Why Use Tox?
 
 #### For Local Testing
-- **Complete isolation**: Each test environment is independent, avoiding dependency conflicts
+
+- **Complete isolation**: Each test environment is independent, avoiding
+  dependency conflicts
 - **Consistency**: You test in exactly the same conditions as CI/CD
 - **Time-saving**: A single command (`tox`) to run all tests and checks
-- **Multi-version**: Easily test your code on Python 3.9, 3.10, 3.11, and 3.12 locally
+- **Multi-version**: Easily test your code on Python 3.9, 3.10, 3.11, and 3.12
+  locally
 
 #### For Remote Repository (CI/CD)
+
 - **Standardization**: The same Tox commands work locally and in GitHub Actions
-- **Simplified maintenance**: Modifying a test = modifying only `tox.ini`, not GitHub workflows
+- **Simplified maintenance**: Modifying a test = modifying only `tox.ini`, not
+  GitHub workflows
 - **Traceability**: Developers can reproduce CI tests exactly locally
-- **Flexibility**: Different Tox environments for different needs (tests, quality, security)
+- **Flexibility**: Different Tox environments for different needs (tests,
+  quality, security)
 
 ---
 
@@ -33,7 +40,8 @@ envlist = py39, py310, py311, py312
 ```
 
 - **minversion**: Minimum required Tox version (3.24.5)
-- **envlist**: List of Python environments to test by default (Python 3.9 to 3.12)
+- **envlist**: List of Python environments to test by default (Python 3.9 to
+  3.12)
 
 ### GitHub Actions Integration
 
@@ -46,7 +54,9 @@ python =
     3.12: py312
 ```
 
-This section **maps** GitHub Actions Python versions to Tox environments. When GitHub Actions uses Python 3.10, Tox automatically activates the `py310` environment.
+This section **maps** GitHub Actions Python versions to Tox environments. When
+GitHub Actions uses Python 3.10, Tox automatically activates the `py310`
+environment.
 
 ---
 
@@ -59,7 +69,8 @@ This section **maps** GitHub Actions Python versions to Tox environments. When G
 description = Run unit tests with coverage
 ```
 
-This default environment applies to all Python environments (py39, py310, py311, py312).
+This default environment applies to all Python environments (py39, py310, py311,
+py312).
 
 #### PYTHONPATH Configuration
 
@@ -69,6 +80,7 @@ setenv =
 ```
 
 Sets the Python path for imports to work correctly:
+
 - `{toxinidir}`: Project root directory
 - Adds `src` and `tests` to PYTHONPATH
 
@@ -81,6 +93,7 @@ deps =
 ```
 
 Installs the necessary tools for:
+
 - **pytest**: Testing framework
 - **pytest-cov**: Code coverage measurement plugin
 
@@ -96,6 +109,7 @@ commands =
 ```
 
 Runs pytest with:
+
 - `--import-mode=importlib`: Modern and recommended import mode
 - `--cov=ndict_tools`: Measures coverage of the `ndict_tools` package
 - `--cov-report=term-missing`: Displays uncovered lines in terminal
@@ -113,7 +127,8 @@ Runs pytest with:
 description = Type checking with mypy
 ```
 
-Checks Python type annotations consistency to detect typing errors before execution.
+Checks Python type annotations consistency to detect typing errors before
+execution.
 
 ### [testenv:flake8] - Linting
 
@@ -123,6 +138,7 @@ description = Lint the code with flake8
 ```
 
 Analyzes code to detect:
+
 - Syntax errors
 - PEP 8 convention violations
 - Excessive complexity
@@ -138,6 +154,7 @@ commands =
 ```
 
 Checks if code respects Black formatting **without modifying files**:
+
 - `--check`: Verification mode only
 - `--diff`: Shows differences if formatting is incorrect
 
@@ -148,7 +165,8 @@ Checks if code respects Black formatting **without modifying files**:
 description = Check import sorting with isort (no changes)
 ```
 
-Checks that imports are sorted according to conventions **without modifying files**.
+Checks that imports are sorted according to conventions **without modifying
+files**.
 
 ### [testenv:bandit] - Security Analysis
 
@@ -160,6 +178,7 @@ commands =
 ```
 
 Scans code for common security vulnerabilities:
+
 - Use of dangerous functions
 - Cryptographic security issues
 - Potential injections
@@ -199,7 +218,8 @@ commands =
     isort src tests
 ```
 
-Combined environment that applies **both** Black and isort for complete formatting.
+Combined environment that applies **both** Black and isort for complete
+formatting.
 
 ---
 
@@ -217,16 +237,16 @@ commands =
     # 1. Auto-formatting
     black src tests
     isort src tests
-    
+
     # 2. Type checking
     mypy src
-    
+
     # 3. Linting
     flake8 src tests
-    
+
     # 4. Security
     bandit -r src
-    
+
     # 5. Tests with coverage
     pytest --import-mode=importlib \
            --cov=ndict_tools \
@@ -241,7 +261,8 @@ commands =
 2. **Type checking**: mypy
 3. **Linting**: flake8
 4. **Security**: bandit
-5. **Tests with coverage**: pytest with the production conditions of the various elements seen above.
+5. **Tests with coverage**: pytest with the production conditions of the various
+   elements seen above.
 
 **Usage**: `tox -e pre-push` before each `git push` to guarantee quality.
 
@@ -263,6 +284,7 @@ commands =
 ```
 
 CI/CD version that **checks** without modifying:
+
 - Uses `black --check` instead of `black`
 - Uses `isort --check-only` instead of `isort`
 
@@ -283,7 +305,8 @@ commands =
            --cov-report=html:coverage/coverage_html tests
 ```
 
-Simplified environment used by GitHub Actions matrix. Executes only tests with coverage, without quality checks.
+Simplified environment used by GitHub Actions matrix. Executes only tests with
+coverage, without quality checks.
 
 ---
 
@@ -297,6 +320,7 @@ description = Quick check (no formatting, only verify)
 ```
 
 Quick check without automatic formatting:
+
 - mypy
 - flake8
 - black --check
@@ -340,6 +364,7 @@ line_length = 88
 ```
 
 Black-compatible configuration:
+
 - **profile = black**: Uses Black profile
 - **line_length = 88**: Consistent with Black
 
@@ -354,6 +379,7 @@ ignore_missing_imports = true
 ```
 
 Type checking configuration:
+
 - Targets Python 3.9 as minimum version
 - Enables warnings on incomplete types
 - Ignores imports without type stubs
@@ -387,6 +413,7 @@ tox -e format
 # The tests pipeline uses
 run: tox -e ci-tests
 ```
+
 ```yaml
 # A quality pipeline could use
 run: tox -e ci-quality
