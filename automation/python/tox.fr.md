@@ -13,17 +13,24 @@
 
 #### Pour les tests locaux
 
-- **Isolation complète** : Chaque environnement de test est indépendant, évitant les conflits de dépendances
+- **Isolation complète** : Chaque environnement de test est indépendant, évitant
+  les conflits de dépendances
 - **Cohérence** : Vous testez exactement dans les mêmes conditions que le CI/CD
-- **Gain de temps** : Une seule commande (`tox`) pour lancer tous les tests et vérifications
-- **Multi-versions** : Testez facilement votre code sur Python 3.9, 3.10, 3.11, et 3.12 en local
+- **Gain de temps** : Une seule commande (`tox`) pour lancer tous les tests et
+  vérifications
+- **Multi-versions** : Testez facilement votre code sur Python 3.9, 3.10, 3.11,
+  et 3.12 en local
 
 #### Pour le repository distant (CI/CD)
 
-- **Standardisation** : Les mêmes commandes Tox fonctionnent en local et dans GitHub Actions
-- **Maintenance simplifiée** : Modifier un test = modifier uniquement `tox.ini`, pas les workflows GitHub
-- **Traçabilité** : Les développeurs peuvent reproduire exactement les tests du CI en local
-- **Flexibilité** : Différents environnements Tox pour différents besoins (tests, qualité, sécurité)
+- **Standardisation** : Les mêmes commandes Tox fonctionnent en local et dans
+  GitHub Actions
+- **Maintenance simplifiée** : Modifier un test = modifier uniquement `tox.ini`,
+  pas les workflows GitHub
+- **Traçabilité** : Les développeurs peuvent reproduire exactement les tests du
+  CI en local
+- **Flexibilité** : Différents environnements Tox pour différents besoins
+  (tests, qualité, sécurité)
 
 ---
 
@@ -36,7 +43,8 @@ envlist = py39, py310, py311, py312
 ```
 
 - **minversion** : Version minimale de Tox requise (3.24.5)
-- **envlist** : Liste des environnements Python à tester par défaut (Python 3.9 à 3.12)
+- **envlist** : Liste des environnements Python à tester par défaut (Python 3.9
+  à 3.12)
 
 ### Intégration GitHub Actions
 
@@ -49,7 +57,9 @@ python =
     3.12: py312
 ```
 
-Cette section fait le **mapping** entre les versions Python de GitHub Actions et les environnements Tox. Lorsque GitHub Actions utilise Python 3.10, Tox active automatiquement l'environnement `py310`.
+Cette section fait le **mapping** entre les versions Python de GitHub Actions et
+les environnements Tox. Lorsque GitHub Actions utilise Python 3.10, Tox active
+automatiquement l'environnement `py310`.
 
 ---
 
@@ -62,7 +72,8 @@ Cette section fait le **mapping** entre les versions Python de GitHub Actions et
 description = Run unit tests with coverage
 ```
 
-Cet environnement par défaut s'applique à tous les environnements Python (py39, py310, py311, py312).
+Cet environnement par défaut s'applique à tous les environnements Python (py39,
+py310, py311, py312).
 
 #### Configuration du PYTHONPATH
 
@@ -101,9 +112,11 @@ commands =
 ```
 
 Lance pytest avec :
+
 - `--import-mode=importlib` : Mode d'import moderne et recommandé
 - `--cov=ndict_tools` : Mesure la couverture du package `ndict_tools`
-- `--cov-report=term-missing` : Affiche les lignes non couvertes dans le terminal
+- `--cov-report=term-missing` : Affiche les lignes non couvertes dans le
+  terminal
 - `--cov-report=xml` : Génère un rapport XML (utilisé par Codecov)
 - `--cov-report=html` : Génère un rapport HTML interactif
 
@@ -118,7 +131,8 @@ Lance pytest avec :
 description = Type checking with mypy
 ```
 
-Vérifie la cohérence des annotations de types Python pour détecter les erreurs de typage avant l'exécution.
+Vérifie la cohérence des annotations de types Python pour détecter les erreurs
+de typage avant l'exécution.
 
 ### [testenv:flake8] - Linting
 
@@ -155,7 +169,8 @@ Vérifie si le code respecte le formatage Black **sans modifier les fichiers** :
 description = Check import sorting with isort (no changes)
 ```
 
-Vérifie que les imports sont triés selon les conventions **sans modifier les fichiers**.
+Vérifie que les imports sont triés selon les conventions **sans modifier les
+fichiers**.
 
 ### [testenv:bandit] - Analyse de sécurité
 
@@ -207,7 +222,8 @@ commands =
     isort src tests
 ```
 
-Environnement combiné qui applique **à la fois** Black et isort pour un formatage complet.
+Environnement combiné qui applique **à la fois** Black et isort pour un
+formatage complet.
 
 ---
 
@@ -225,16 +241,16 @@ commands =
     # 1. Auto-formatting
     black src tests
     isort src tests
-    
+
     # 2. Type checking
     mypy src
-    
+
     # 3. Linting
     flake8 src tests
-    
+
     # 4. Security
     bandit -r src
-    
+
     # 5. Tests with coverage
     pytest --import-mode=importlib \
            --cov=ndict_tools \
@@ -249,7 +265,8 @@ Environnement **complet** à exécuter avant de pousser du code. Il combine :
 2. **Vérification des types** : mypy
 3. **Linting** : flake8
 4. **Sécurité** : bandit
-5. **Tests et couverture** : pytest avec les conditions de production des différents éléments vus plus haut.
+5. **Tests et couverture** : pytest avec les conditions de production des
+   différents éléments vus plus haut.
 
 **Usage** : `tox -e pre-push` avant chaque `git push` pour garantir la qualité.
 
@@ -292,7 +309,8 @@ commands =
            --cov-report=html:coverage/coverage_html tests
 ```
 
-Environnement simplifié utilisé par la matrice GitHub Actions. Exécute uniquement les tests avec couverture, sans les vérifications de qualité.
+Environnement simplifié utilisé par la matrice GitHub Actions. Exécute
+uniquement les tests avec couverture, sans les vérifications de qualité.
 
 ---
 
@@ -312,7 +330,8 @@ Vérification rapide sans formatage automatique :
 - black --check
 - isort --check-only
 
-**Usage** : `tox -e check` pour une vérification rapide sans modifier les fichiers.
+**Usage** : `tox -e check` pour une vérification rapide sans modifier les
+fichiers.
 
 ### [testenv:local] - Alias de compatibilité
 
@@ -321,7 +340,8 @@ Vérification rapide sans formatage automatique :
 description = Alias pour pre-push (rétrocompatibilité)
 ```
 
-Simple alias vers `pre-push` pour maintenir la compatibilité avec d'anciennes habitudes.
+Simple alias vers `pre-push` pour maintenir la compatibilité avec d'anciennes
+habitudes.
 
 ---
 
@@ -410,7 +430,8 @@ run: tox -e ci-quality
 ## Ressources complémentaires
 
 - Fichier de configuration de tox [`tox.ini`](../../shared/tox_ini.txt)
-- Fichier des packages requis [`requirements.test.txt`](../../shared/requirements.test.txt)
+- Fichier des packages requis
+  [`requirements.test.txt`](../../shared/requirements.test.txt)
 
 ## Avantages de cette Configuration
 

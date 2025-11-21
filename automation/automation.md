@@ -2,13 +2,13 @@
 
 ## Overview
 
-Test automation is the practice of using software tools to execute tests automatically, providing rapid feedback on 
+Test automation is the practice of using software tools to execute tests automatically, providing rapid feedback on
 code quality without manual intervention. This automation is essential in modern development workflows, particularly
 in CI/CD pipelines where code changes must be validated quickly and reliably.
 
 ## Test-Driven Development (TDD)
 
-**Test-Driven Development** is a software development methodology that places automated testing at the very core of
+**Test-Driven Development*- is a software development methodology that places automated testing at the very core of
 the development process. Rather than writing tests after code, TDD inverts this relationship.
 
 ### The TDD Cycle: Red-Green-Refactor
@@ -59,16 +59,16 @@ Write Test (Red) → Write Code (Green) → Refactor (Green) → Repeat
 
 TDD and test automation are natural partners:
 
-- **TDD creates the tests** that automation runs continuously
-- **Automation provides instant feedback** required by the TDD cycle
-- **CI/CD pipelines** execute TDD-written tests on every commit
-- **Fast test execution** (unit tests in seconds) enables rapid iteration
+- **TDD creates the tests*- that automation runs continuously
+- **Automation provides instant feedback*- required by the TDD cycle
+- **CI/CD pipelines*- execute TDD-written tests on every commit
+- **Fast test execution*- (unit tests in seconds) enables rapid iteration
 
 ## Focus on Unit and Integration Tests
 
 ### Unit Tests: The Foundation
 
-**Unit tests** are the cornerstone of any automated testing strategy. They:
+**Unit tests*- are the cornerstone of any automated testing strategy. They:
 
 - Test individual components (functions, methods, classes) in isolation
 - Execute in milliseconds, providing immediate feedback
@@ -85,7 +85,7 @@ TDD and test automation are natural partners:
 
 ### Integration Tests: Component Interactions
 
-**Integration tests** (also called **component tests**) verify that multiple components work together correctly. They:
+**Integration tests*- (also called **component tests**) verify that multiple components work together correctly. They:
 
 - Test interactions between modules, classes, or services
 - Validate data flow across component boundaries
@@ -121,7 +121,7 @@ Success/Failure Notification
 
 ### Why Pytest?
 
-**Pytest** is the industry-standard testing framework for Python, offering:
+**Pytest*- is the industry-standard testing framework for Python, offering:
 
 - **Simple syntax**: Write tests with plain `assert` statements
 - **Powerful features**: Fixtures, parametrization, plugins
@@ -130,12 +130,12 @@ Success/Failure Notification
 
 ### Why Tox?
 
-**Tox** is a test automation and environment management tool that:
+**Tox*- is a test automation and environment management tool that:
 
-- **Creates isolated environments** : Each test run is independent
-- **Tests across Python versions** : Verify compatibility (3.9, 3.10, 3.11, 3.12)
-- **Standardizes workflows** : Same commands work locally and in CI/CD
-- **Manages dependencies** : Ensures reproducible test environments
+- **Creates isolated environments*- : Each test run is independent
+- **Tests across Python versions*- : Verify compatibility (3.9, 3.10, 3.11, 3.12)
+- **Standardizes workflows*- : Same commands work locally and in CI/CD
+- **Manages dependencies*- : Ensures reproducible test environments
 
 **Key advantages:**
 
@@ -160,11 +160,11 @@ tox -e ci-quality     # Run quality checks
 
 This combination ensures:
 
-1. **Unit tests** run fast with pytest
-2. **Integration tests** run in isolated tox environments
-3. **Coverage reports** track test completeness
-4. **Multiple Python versions** tested automatically
-5. **Local and remote consistency** guaranteed
+1. **Unit tests*- run fast with pytest
+2. **Integration tests*- run in isolated tox environments
+3. **Coverage reports*- track test completeness
+4. **Multiple Python versions*- tested automatically
+5. **Local and remote consistency*- guaranteed
 
 ---
 
@@ -174,7 +174,7 @@ You will find one of the [Tox configuration files](../shared/tox_ini.txt) that I
 that I am currently standardizing across my current projects. This configuration file is accompanied by a detailed
 explanation in [French](python/tox.fr.md) and [English](python/tox.en.md) where the following topics are covered:
 
-  - Introduction to Tox and its benefits
-  - Detailed configuration of all environments
-  - Practical usage examples
-  - Tool configuration (flake8, isort, mypy)
+- Introduction to Tox and its benefits
+- Detailed configuration of all environments
+- Practical usage examples
+- Tool configuration (flake8, isort, mypy)
