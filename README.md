@@ -17,7 +17,7 @@ In my free time, I work on several **Python** projects, exploring:
 
 I also work on automation topics and processes:
 
-- [Python test automation with Tox](automation/automation.md) in a virtualized environment using virtualenv, and I am 
+- [Python test automation with Tox](automation/automation.md) in a virtualized environment using virtualenv, and I am
   currently working on migrating from virtualization to [uv](https://docs.astral.sh/uv/).
 - [Pipelines](automation/pipelines.md) with explanations here on GitHub Action Workflows.
 
