@@ -81,35 +81,43 @@ mechanisms, integrated development environments can add unwanted directives
 Clones the Git repository into the execution environment to access source code and configuration files.
 
 ### Step 2: Python Setup
+
 ```yaml
 - name: Setup Python
   uses: actions/setup-python@v4
   with:
     python-version: "3.12"
 ```
+
 Installs Python 3.12 specifically. Unlike the tests pipeline which uses a matrix, only a single version is needed here
 to generate the coverage report. We might wonder why tests need to be repeated when they have already been performed
 previously: in fact, as the processes are separate, the tests are no longer available when this process is launched.
 
 ### Step 3: Dependencies Installation
+
 ```yaml
 - name: Install dependencies
   run: |
     python -m pip install --upgrade pip
     pip install tox
 ```
+
 Prepares the environment by:
+
 1. Upgrading `pip` to the latest version
 2. Installing `tox` to manage test execution with coverage measurement
 
 ### Step 4: Running Tests with Coverage
+
 ```yaml
 - name: Run tests with coverage
   run: tox -e gh-ci
 ```
+
 Runs the tests using the same `gh-ci` environment as the tests pipeline, but this time also generating code coverage data (percentage of code tested).
 
 ### Step 5: Upload to Codecov
+
 ```yaml
 - name: Upload coverage reports to Codecov
   if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -122,10 +130,12 @@ Runs the tests using the same `gh-ci` environment as the tests pipeline, but thi
 This final step uploads the coverage report to Codecov, but **only** for main branches (`main` or `master`).
 
 **Important parameters**:
+
 - `token`: Uses a secret token stored in GitHub secrets to authenticate with Codecov
 - `fail_ci_if_error: true`: If the upload fails, the entire pipeline fails as well, ensuring we detect reporting issues
 
 **Branch-specific behavior**:
+
 - On `main` or `master`: Report is uploaded to Codecov
 - On `updates/**` or `staging/**`: Tests are executed with coverage, but the report is **not** uploaded (to avoid polluting Codecov with temporary branches)
 

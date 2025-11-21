@@ -77,19 +77,23 @@ ajouter des directives non souhaitées.
 ## Étapes détaillées du pipeline
 
 ### Étape 1 : Récupération du code source
+
 ```yaml
 - name: Checkout repository
   uses: actions/checkout@v4
 ```
+
 Clone le dépôt Git dans l'environnement d'exécution pour accéder au code source et aux fichiers de configuration.
 
 ### Étape 2 : Configuration de Python
+
 ```yaml
 - name: Setup Python
   uses: actions/setup-python@v4
   with:
     python-version: "3.12"
 ```
+
 Installe Python 3.12 spécifiquement. Contrairement au pipeline de tests qui utilise une matrice, ici une seule
 version est nécessaire pour générer le rapport de couverture. Par contre, on peut se demander pourquoi refaire les
 tests alors qu'ils ont déjà été réalisés précédemment : en fait, on ne peut pas reprendre les résultats du précédent
@@ -103,6 +107,7 @@ processus car ils sont étanches entre-eux.
     pip install tox
 ```
 Prépare l'environnement en :
+
 1. Mettant à jour `pip` vers la dernière version
 2. Installant `tox` pour gérer l'exécution des tests avec mesure de couverture
 
@@ -126,10 +131,12 @@ Lance les tests en utilisant le même environnement `gh-ci` que le pipeline de t
 Cette étape finale télécharge le rapport de couverture vers Codecov, mais **uniquement** pour les branches principales (`main` ou `master`).
 
 **Paramètres importants** :
+
 - `token` : Utilise un jeton secret stocké dans les secrets GitHub pour s'authentifier auprès de Codecov
 - `fail_ci_if_error: true` : Si le téléchargement échoue, le pipeline entier échoue également, garantissant qu'on détecte les problèmes de reporting
 
 **Comportement selon la branche** :
+
 - Sur `main` ou `master` : Le rapport est téléchargé vers Codecov
 - Sur `updates/**` ou `staging/**` : Les tests sont exécutés avec couverture, mais le rapport n'est **pas** téléchargé (pour éviter de polluer Codecov avec des branches temporaires)
 

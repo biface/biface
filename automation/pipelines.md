@@ -33,6 +33,7 @@ The following pipelines are documented in this repository:
 ## How to Use This Documentation
 
 Each pipeline is documented with:
+
 - An overview of its purpose
 - Trigger conditions (when it runs)
 - Detailed step-by-step explanations of each action

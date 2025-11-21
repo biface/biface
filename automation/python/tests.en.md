@@ -41,6 +41,7 @@ jobs:
 ### Matrix Testing Strategy
 
 The pipeline uses a **test matrix** to run tests across multiple Python versions simultaneously:
+
 - Python 3.9
 - Python 3.10
 - Python 3.11
@@ -87,22 +88,27 @@ jobs:
 This step clones your Git repository into the execution environment. It uses the official `checkout` action version 4, which downloads all the source code needed to run the tests.
 
 ### Step 2: Python Setup
+
 ```yaml
 - name: Setup Python ${{ matrix.python-version }}
   uses: actions/setup-python@v4
   with:
     python-version: ${{ matrix.python-version }}
 ```
+
 This step installs the specific Python version defined by the matrix. The `${{ matrix.python-version }}` variable takes each defined value (3.9, 3.10, 3.11, 3.12) successively for each parallel execution.
 
 ### Step 3: Dependencies Installation
+
 ```yaml
 - name: Install dependencies
   run: |
     python -m pip install --upgrade pip
     pip install tox
 ```
+
 This step prepares the testing environment by:
+
 1. Upgrading `pip` to its latest version to avoid compatibility issues
 2. Installing `tox`, a test automation tool that manages virtual environments and test execution
 
@@ -112,6 +118,7 @@ This step prepares the testing environment by:
   run: tox -e gh-ci
 ```
 This final step launches the tests using `tox` with the `gh-ci` (GitHub CI) environment. Tox will:
+
 - Create an isolated virtual environment
 - Install test dependencies defined in your `tox.ini` configuration
 - Execute the test suite

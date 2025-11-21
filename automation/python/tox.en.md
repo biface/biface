@@ -3,6 +3,7 @@
 ## What is Tox?
 
 **Tox** is a Python test automation tool that allows you to:
+
 - Create **isolated virtual environments** for each test configuration
 - Test your code across **multiple Python versions** simultaneously
 - Execute **standardized command suites** (tests, linting, formatting)
@@ -11,12 +12,14 @@
 ### Why Use Tox?
 
 #### For Local Testing
+
 - **Complete isolation**: Each test environment is independent, avoiding dependency conflicts
 - **Consistency**: You test in exactly the same conditions as CI/CD
 - **Time-saving**: A single command (`tox`) to run all tests and checks
 - **Multi-version**: Easily test your code on Python 3.9, 3.10, 3.11, and 3.12 locally
 
 #### For Remote Repository (CI/CD)
+
 - **Standardization**: The same Tox commands work locally and in GitHub Actions
 - **Simplified maintenance**: Modifying a test = modifying only `tox.ini`, not GitHub workflows
 - **Traceability**: Developers can reproduce CI tests exactly locally
@@ -69,6 +72,7 @@ setenv =
 ```
 
 Sets the Python path for imports to work correctly:
+
 - `{toxinidir}`: Project root directory
 - Adds `src` and `tests` to PYTHONPATH
 
@@ -81,6 +85,7 @@ deps =
 ```
 
 Installs the necessary tools for:
+
 - **pytest**: Testing framework
 - **pytest-cov**: Code coverage measurement plugin
 
@@ -96,6 +101,7 @@ commands =
 ```
 
 Runs pytest with:
+
 - `--import-mode=importlib`: Modern and recommended import mode
 - `--cov=ndict_tools`: Measures coverage of the `ndict_tools` package
 - `--cov-report=term-missing`: Displays uncovered lines in terminal
@@ -123,6 +129,7 @@ description = Lint the code with flake8
 ```
 
 Analyzes code to detect:
+
 - Syntax errors
 - PEP 8 convention violations
 - Excessive complexity
@@ -138,6 +145,7 @@ commands =
 ```
 
 Checks if code respects Black formatting **without modifying files**:
+
 - `--check`: Verification mode only
 - `--diff`: Shows differences if formatting is incorrect
 
@@ -160,6 +168,7 @@ commands =
 ```
 
 Scans code for common security vulnerabilities:
+
 - Use of dangerous functions
 - Cryptographic security issues
 - Potential injections
@@ -236,6 +245,7 @@ commands =
 ```
 
 **Complete** environment to execute before pushing code. It combines:
+
 1. **Auto-formatting**: Black + isort
 2. **Type checking**: mypy
 3. **Linting**: flake8
@@ -262,6 +272,7 @@ commands =
 ```
 
 CI/CD version that **checks** without modifying:
+
 - Uses `black --check` instead of `black`
 - Uses `isort --check-only` instead of `isort`
 
@@ -296,6 +307,7 @@ description = Quick check (no formatting, only verify)
 ```
 
 Quick check without automatic formatting:
+
 - mypy
 - flake8
 - black --check
@@ -339,6 +351,7 @@ line_length = 88
 ```
 
 Black-compatible configuration:
+
 - **profile = black**: Uses Black profile
 - **line_length = 88**: Consistent with Black
 
@@ -353,6 +366,7 @@ ignore_missing_imports = true
 ```
 
 Type checking configuration:
+
 - Targets Python 3.9 as minimum version
 - Enables warnings on incomplete types
 - Ignores imports without type stubs

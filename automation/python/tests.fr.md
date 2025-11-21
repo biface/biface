@@ -41,6 +41,7 @@ jobs:
 ### Stratégie de test matricielle
 
 Le pipeline utilise une **matrice de tests** pour exécuter les tests sur plusieurs versions de Python simultanément :
+
 - Python 3.9
 - Python 3.10
 - Python 3.11
@@ -104,6 +105,7 @@ Cette étape installe la version spécifique de Python définie par la matrice. 
     pip install tox
 ```
 Cette étape prépare l'environnement de test en :
+
 1. Mettant à jour `pip` vers sa dernière version pour éviter les problèmes de compatibilité
 2. Installant `tox`, un outil d'automatisation des tests qui gère les environnements virtuels et l'exécution des tests
 
@@ -113,6 +115,7 @@ Cette étape prépare l'environnement de test en :
   run: tox -e gh-ci
 ```
 Cette dernière étape lance les tests en utilisant `tox` avec l'environnement `gh-ci` (GitHub CI). Tox va :
+
 - Créer un environnement virtuel isolé
 - Installer les dépendances de test définies dans votre configuration `tox.ini`
 - Exécuter la suite de tests

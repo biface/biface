@@ -3,6 +3,7 @@
 ## Qu'est-ce que Tox ?
 
 **Tox** est un outil d'automatisation des tests Python qui permet de :
+
 - Créer des **environnements virtuels isolés** pour chaque configuration de test
 - Tester votre code sur **plusieurs versions de Python** simultanément
 - Exécuter des **suites de commandes standardisées** (tests, linting, formatage)
@@ -11,12 +12,14 @@
 ### Pourquoi utiliser Tox ?
 
 #### Pour les tests locaux
+
 - **Isolation complète** : Chaque environnement de test est indépendant, évitant les conflits de dépendances
 - **Cohérence** : Vous testez exactement dans les mêmes conditions que le CI/CD
 - **Gain de temps** : Une seule commande (`tox`) pour lancer tous les tests et vérifications
 - **Multi-versions** : Testez facilement votre code sur Python 3.9, 3.10, 3.11, et 3.12 en local
 
 #### Pour le repository distant (CI/CD)
+
 - **Standardisation** : Les mêmes commandes Tox fonctionnent en local et dans GitHub Actions
 - **Maintenance simplifiée** : Modifier un test = modifier uniquement `tox.ini`, pas les workflows GitHub
 - **Traçabilité** : Les développeurs peuvent reproduire exactement les tests du CI en local
@@ -69,6 +72,7 @@ setenv =
 ```
 
 Définit le chemin Python pour que les imports fonctionnent correctement :
+
 - `{toxinidir}` : Répertoire racine du projet
 - Ajoute `src` et `tests` au PYTHONPATH
 
@@ -81,6 +85,7 @@ deps =
 ```
 
 Installe les outils nécessaires pour :
+
 - **pytest** : Framework de tests
 - **pytest-cov** : Plugin de mesure de couverture de code
 
@@ -123,6 +128,7 @@ description = Lint the code with flake8
 ```
 
 Analyse le code pour détecter :
+
 - Erreurs de syntaxe
 - Violations des conventions PEP 8
 - Complexité excessive
@@ -138,6 +144,7 @@ commands =
 ```
 
 Vérifie si le code respecte le formatage Black **sans modifier les fichiers** :
+
 - `--check` : Mode vérification uniquement
 - `--diff` : Affiche les différences si le formatage n'est pas correct
 
@@ -160,6 +167,7 @@ commands =
 ```
 
 Scanne le code à la recherche de vulnérabilités de sécurité courantes :
+
 - Utilisation de fonctions dangereuses
 - Problèmes de sécurité cryptographiques
 - Injections potentielles
@@ -263,6 +271,7 @@ commands =
 ```
 
 Version CI/CD qui **vérifie** sans modifier :
+
 - Utilise `black --check` au lieu de `black`
 - Utilise `isort --check-only` au lieu de `isort`
 
@@ -297,6 +306,7 @@ description = Quick check (no formatting, only verify)
 ```
 
 Vérification rapide sans formatage automatique :
+
 - mypy
 - flake8
 - black --check
@@ -340,6 +350,7 @@ line_length = 88
 ```
 
 Configuration compatible avec Black :
+
 - **profile = black** : Utilise le profil Black
 - **line_length = 88** : Cohérent avec Black
 
@@ -354,6 +365,7 @@ ignore_missing_imports = true
 ```
 
 Configuration de vérification des types :
+
 - Cible Python 3.9 comme version minimale
 - Active les avertissements sur les types incomplets
 - Ignore les imports sans stubs de types
@@ -396,6 +408,7 @@ run: tox -e ci-quality
 ---
 
 ## Ressources complémentaires
+
 - Fichier de configuration de tox [`tox.ini`](../../shared/tox_ini.txt)
 - Fichier des packages requis [`requirements.test.txt`](../../shared/requirements.test.txt)
 
