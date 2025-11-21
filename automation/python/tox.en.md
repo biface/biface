@@ -236,7 +236,6 @@ commands =
 ```
 
 **Complete** environment to execute before pushing code. It combines:
-
 1. **Auto-formatting**: Black + isort
 2. **Type checking**: mypy
 3. **Linting**: flake8

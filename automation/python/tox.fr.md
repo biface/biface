@@ -387,6 +387,7 @@ tox -e format
 # Le pipeline de tests utilise
 run: tox -e ci-tests
 ```
+
 ```yaml
 # Un pipeline de qualité pourrait utiliser
 run: tox -e ci-quality
@@ -395,9 +396,8 @@ run: tox -e ci-quality
 ---
 
 ## Ressources complémentaires
-
-* Fichier de configuration de tox [`tox.ini`](../../shared/tox_ini.txt)
-* Fichier des packages requis [`requiremenets.test.txt`](../../shared/requirements.test.txt)
+- Fichier de configuration de tox [`tox.ini`](../../shared/tox_ini.txt)
+- Fichier des packages requis [`requirements.test.txt`](../../shared/requirements.test.txt)
 
 ## Avantages de cette Configuration
 

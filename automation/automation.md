@@ -156,8 +156,6 @@ This combination ensures:
 
 ## Detailed Configuration
 
-## Detailed Configuration
-
 You will find one of the [Tox configuration files](../shared/tox_ini.txt) that I use in most of my projects or
 that I am currently standardizing across my current projects. This configuration file is accompanied by a detailed
 explanation in [French](python/tox.fr.md) and [English](python/tox.en.md) where the following topics are covered:
