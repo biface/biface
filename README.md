@@ -1,19 +1,19 @@
 ## Hi there 👋
 
-**Chief Information Officer (CIO)** at one of France’s leading universities, with international professional experience
+**Chief Information Officer (CIO)*- at one of France’s leading universities, with international professional experience
 and active involvement in European higher education and research networks.
 
 Passionate about amateur development and contributing to open-source projects—**wherever the code lives**—for the joy
-of creating, improving, and giving visibility to overlooked tools. I currently use **both GitHub and GitLab** to
+of creating, improving, and giving visibility to overlooked tools. I currently use **both GitHub and GitLab*- to
 collaborate, test pipelines, and experiment with CI/CD workflows, but I remain platform-agnostic and open to evolving
 with the best tools for the job.
 
-In my free time, I work on several **Python** projects, exploring:
+In my free time, I work on several **Python*- projects, exploring:
 
 - [**Nested dictionaries**](https://github.com/biface/ndt)
-- **Simple advanced Data Structures** (graphs, trees, stacks, etc.),
+- **Simple advanced Data Structures*- (graphs, trees, stacks, etc.),
 - **Translation management**, inspired by Babel, with support for multiple translations and plural forms,
-- **Upcoming projects** related to frameworks like Django.
+- **Upcoming projects*- related to frameworks like Django.
 
 I also work on automation topics and processes:
 
@@ -21,13 +21,13 @@ I also work on automation topics and processes:
   currently working on migrating from virtualization to [uv](https://docs.astral.sh/uv/).
 - [Pipelines](automation/pipelines.md) with explanations here on GitHub Action Workflows.
 
-This space is where I occasionally share **personal reflections** on software development, IT governance, and technical
+This space is where I occasionally share **personal reflections*- on software development, IT governance, and technical
 experiences—always behind the comfort of a pseudonym. For deeper dives into these topics, I develop and maintain a
 **structured wiki on GitLab**, where you can find [detailed documentation](https://gitlab.com/biface/biface/-/wikis/home), best practices, and ongoing
 experiments.
 
 <!--
-**biface/biface** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+**biface/biface*- is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
 Here are some ideas to get you started:
 
