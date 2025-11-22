@@ -19,8 +19,9 @@ TDD follows a simple but powerful three-step cycle:
 2. **Green**: Write the minimum code necessary to make the test pass
 3. **Refactor**: Improve the code while keeping tests green
 
-```text
-Write Test (Red) → Write Code (Green) → Refactor (Green) → Repeat
+```mermaid
+flowchart LR
+     P(["Write test<br>(Red)"]) --> n1(["Write Code<br>(Green)"]) --> n2([Repeat])
 ```
 
 ### Benefits of TDD in Automated Testing
