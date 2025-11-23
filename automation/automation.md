@@ -171,9 +171,14 @@ This combination ensures:
 
 ## Detailed Configuration
 
+While I am writing about automation with Python, I am switching to Astral's UV virtual environment, which promises to
+be more powerful, faster, and allow for more structured package management within a project. I don't have enough
+mastery of it yet to discuss it here, but I'll share with you the changes I'm introducing in test automation and other
+processing with tox and Python.  
+
 You will find one of the [Tox configuration files](../shared/tox_ini.txt) that I use in most of my projects or
 that I am currently standardizing across my current projects. This configuration file is accompanied by a detailed
-explanation in [French](python/tox.fr.md) and [English](python/tox.en.md) where the following topics are covered:
+explanation in [French](tests/python/tox.fr.md) and [English](tests/python/tox.en.md) where the following topics are covered:
 
 - Introduction to Tox and its benefits
 - Detailed configuration of all environments

@@ -429,9 +429,9 @@ run: tox -e ci-quality
 
 ## Ressources complémentaires
 
-- Fichier de configuration de tox [`tox.ini`](../../shared/tox_ini.txt)
+- Fichier de configuration de tox [`tox.ini`](../../../shared/tox_ini.txt)
 - Fichier des packages requis
-  [`requirements.test.txt`](../../shared/requirements.test.txt)
+  [`requirements.test.txt`](../../../shared/requirements.test.txt)
 
 ## Avantages de cette Configuration
 
