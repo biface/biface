@@ -13,7 +13,7 @@ testing, code quality checks, and deployment processes.
 
 The pipelines described in this documentation serve several key objectives:
 
-- **Automation**: Reduce manual intervention by automating repetitive tasks [such as testing](automation.md) and deployment
+- **Automation**: Reduce manual intervention by automating repetitive tasks [such as testing](../automation.md) and deployment
 - **Quality Assurance**: Ensure code quality and compatibility across different environments before merging changes
 - **Continuous Integration**: Validate every code change automatically to catch issues early in the development cycle
 - **Consistency**: Maintain standardized processes across all branches and contributions
@@ -23,10 +23,10 @@ The pipelines described in this documentation serve several key objectives:
 
 The following pipelines are documented in this repository:
 
-1. **Python CI - Tests** [Français](python/tests.fr.md) [English](python/tests.en.md): Automated [testing across
-   multiple Python versions](../shared/tests.txt) to ensure compatibility and code quality
-2. **Python CI - Coverage** [Français](python/coverage.fr.md) [English](python/coverage.en.md): Automated
-   [measures of a Python project's code coverage](../shared/coverage.txt) and automatically uploads reports to Codecov
+1. **Python CI - Tests** [Français](tests.fr.md) [English](tests.en.md): Automated [testing across
+   multiple Python versions](../../shared/tests.txt) to ensure compatibility and code quality
+2. **Python CI - Coverage** [Français](../coverage/python/coverage.fr.md) [English](../coverage/python/coverage.en.md): Automated
+   [measures of a Python project's code coverage](../../shared/coverage.txt) and automatically uploads reports to Codecov
 
 _(Additional pipelines will be documented as they are added)_
 

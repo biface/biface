@@ -19,7 +19,7 @@ I also work on automation topics and processes:
 
 - [Python test automation with Tox](automation/automation.md) in a virtualized environment using virtualenv, and I am
   currently working on migrating from virtualization to [uv](https://docs.astral.sh/uv/).
-- [Pipelines](automation/pipelines.md) with explanations here on GitHub Action Workflows.
+- [Pipelines](automation/pipelines/pipelines.md) with explanations here on GitHub Action Workflows.
 
 This space is where I occasionally share **personal reflections** on software development, IT governance, and technical
 experiences—always behind the comfort of a pseudonym. For deeper dives into these topics, I develop and maintain a
