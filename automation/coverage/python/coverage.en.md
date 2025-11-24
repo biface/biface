@@ -159,7 +159,7 @@ branches (`main` or `master`).
 
 ## Complete Workflow
 
-```text
+```plaintext
 1. Code push to a concerned branch
    ↓
 2. "Python CI - Tests" pipeline triggers and executes

@@ -396,7 +396,7 @@ Configuration de vérification des types :
 
 ### Tests locaux
 
-```bash
+```plaintext
 # Tester sur toutes les versions Python
 tox
 
