@@ -84,7 +84,7 @@ If one job fails (e.g., Python 3.9), the other jobs (3.10, 3.11, 3.12) continue 
 - Don't hide failures on other versions
 
 **Example scenario:**
-```
+```plaintext
 Python 3.9:  ✅ Passed
 Python 3.10: ❌ Failed (incompatible new test)
 Python 3.11: ✅ Passed
@@ -147,7 +147,7 @@ with:
 → Tests run on the correct code!
 
 **Concrete example:**
-```
+```plaintext
 Push to feature/linear
   → Quality runs on feature/linear ✅
   → Tests triggers via workflow_run
@@ -558,7 +558,7 @@ It's strongly recommended to make **all jobs required**:
 ### Issue: "file or directory not found: tests"
 
 **Symptom:**
-```
+```plaintext
 ERROR: file or directory not found: tests
 ```
 

@@ -84,7 +84,7 @@ Si un job échoue (par ex. Python 3.9), les autres jobs (3.10, 3.11, 3.12) conti
 - Ne pas masquer les échecs sur d'autres versions
 
 **Exemple de scénario :**
-```
+```plaintext
 Python 3.9:  ✅ Réussi
 Python 3.10: ❌ Échoué (nouveau test incompatible)
 Python 3.11: ✅ Réussi
@@ -147,7 +147,7 @@ with:
 → Les tests tournent sur le bon code !
 
 **Exemple concret :**
-```
+```plaintext
 Push sur feature/linear
   → Quality s'exécute sur feature/linear ✅
   → Tests se déclenche via workflow_run
@@ -558,7 +558,7 @@ Il est fortement recommandé de rendre **tous les jobs obligatoires** :
 ### Problème : "file or directory not found: tests"
 
 **Symptôme :**
-```
+```plaintext
 ERROR: file or directory not found: tests
 ```
 
