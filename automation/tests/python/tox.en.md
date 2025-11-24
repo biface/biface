@@ -390,7 +390,7 @@ Type checking configuration:
 
 ### Local Testing
 
-```bash
+```plaintext
 # Test on all Python versions
 tox
 

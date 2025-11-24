@@ -53,7 +53,7 @@ plusieurs versions de Python simultanément :
 - Python 3.11
 - Python 3.12
 
-Cela signifie que le job `test` sera exécuté **4 fois en parallèle**, une fois
+Cela signifie que le job `test` sera exécuté **quatre (4) fois en parallèle**, une fois
 pour chaque version de Python, garantissant ainsi la compatibilité de votre code
 avec ces différentes versions.
 

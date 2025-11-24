@@ -164,7 +164,7 @@ Cette étape finale télécharge le rapport de couverture vers Codecov, mais
 
 ## Flux de travail complet
 
-```text
+```plaintext
 1. Push de code sur une branche concernée
    ↓
 2. Pipeline "Python CI - Tests" se déclenche et s'exécute

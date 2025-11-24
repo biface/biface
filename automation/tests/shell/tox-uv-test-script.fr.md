@@ -87,7 +87,7 @@ graph TB
 
 ### Section 1 : Shebang et options
 
-```text
+```plaintext
  #!/usr/bin/env bash
 ```
 
@@ -100,7 +100,7 @@ graph TB
 
 ---
 
-```text
+```plaintext
  set -euo pipefail
 ```
 
@@ -113,7 +113,7 @@ graph TB
 | `-o pipefail` | Pipe fail       | Dans un pipe, échoue si n'importe quelle commande échoue |
 
 **Exemple d'impact** :
-```text
+```plaintext
 # Sans -e
 grep "motif" fichier.txt  # Échoue
 echo "Continue..."        # S'exécute quand même
@@ -128,7 +128,7 @@ echo "Continue..."        # NE S'EXÉCUTE PAS
 
 ### Section 2 : Constantes de couleur
 
-```text
+```plaintext
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
@@ -155,7 +155,7 @@ readonly NC='\033[0m'
 
 ### Section 3 : Détermination des chemins
 
-```text
+```plaintext
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ```
 
@@ -189,14 +189,14 @@ graph LR
 
 ---
 
-```text
+```plaintext
 readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 ```
 
 **Remonte de deux (2) niveaux pour atteindre la racine.**
 
 **Chemin** :
-```text
+```plaintext
 /home/user/project/.tox-config/scripts  ← SCRIPT_DIR
                   ↑ (../)
 /home/user/project/.tox-config
@@ -206,7 +206,7 @@ readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 ---
 
-```text
+```plaintext
 readonly VERSIONS_FILE="${1:-${PROJECT_ROOT}/.tox-config/versions.txt}"
 ```
 
@@ -219,7 +219,7 @@ readonly VERSIONS_FILE="${1:-${PROJECT_ROOT}/.tox-config/versions.txt}"
 - Sinon → utilise `${PROJECT_ROOT}/.tox-config/versions.txt`
 
 **Exemples** :
-```text
+```plaintext
 # Sans argument
 ./test.bash
 # VERSIONS_FILE = "/home/user/project/.tox-config/versions.txt"
@@ -233,7 +233,7 @@ readonly VERSIONS_FILE="${1:-${PROJECT_ROOT}/.tox-config/versions.txt}"
 
 ### Section 4 : Fonctions de logging
 
-```text
+```plaintext
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $*"
 }
@@ -251,14 +251,14 @@ log_info() {
 | `$*`         | Tous les arguments passés à la fonction        |
 
 **Utilisation** :
-```text
+```plaintext
 log_info "Démarrage des tests"
 # Affiche en bleu : [INFO] Démarrage des tests
 ```
 
 ---
 
-```text
+```plaintext
 log_error() {
     echo -e "${RED}[ERROR]${NC} $*" >&2
 }
@@ -285,7 +285,7 @@ graph LR
 
 ---
 
-```text
+```plaintext
 log_section() {
     echo ""
     echo -e "${BLUE}================================================================${NC}"
@@ -308,7 +308,7 @@ Running tests with py310 (1/3)
 
 ### Section 5 : Fonction principale run_tests()
 
-```bash
+```plaintext
 run_tests() {
     cd "${PROJECT_ROOT}"
 ```
@@ -319,7 +319,7 @@ run_tests() {
 
 #### 5.1 Vérification de l'existence du fichier
 
-```text
+```plaintext
 if [[ ! -f "${VERSIONS_FILE}" ]]; then
     log_error "File not found: ${VERSIONS_FILE}"
     log_info "Using default versions: py310, py311"
@@ -363,7 +363,7 @@ graph TD
 
 #### 5.2 Lecture du fichier versions.txt
 
-```text
+```plaintext
 local versions=()
 while IFS= read -r line || [[ -n "${line}" ]]; do
     # Suppression des espaces en debut et fin (sans xargs)
@@ -381,14 +381,14 @@ done < "${VERSIONS_FILE}"
 **Décortiquons cette boucle de traitement des versions enregistrées** :
 
 ##### Déclaration du tableau
-```text
+```plaintext
 local versions=()
 ```
 - `local` : Variable locale à la fonction
 - `()` : Tableau vide
 
 ##### Boucle de lecture
-```text
+```plaintext
 while IFS= read -r line || [[ -n "${line}" ]]; do
 ```
 
@@ -408,7 +408,7 @@ while IFS= read -r line || [[ -n "${line}" ]]; do
 
 ##### Suppression des espaces (trim)
 
-```text
+```plaintext
 line="${line#"${line%%[![:space:]]*}"}"  # Trim leading
 line="${line%"${line##*[![:space:]]}"}"  # Trim trailing
 ```
@@ -448,7 +448,7 @@ graph TB
    - **Résultat** : Ligne sans espaces de fin
 
 **Exemple complet** :
-```bash
+```plaintext
  line="  py310  "
 # Étape 1: ${line%%[![:space:]]*} = "  "
 # Étape 2: ${line#"  "} = "py310  "
@@ -458,14 +458,14 @@ graph TB
 
 ##### Filtrage des lignes
 
-```text
+```plaintext
 [[ -z "${line}" ]] && continue
 ```
 - `-z` : Vraie si chaîne vide (zero length)
 - `&&` : Si vrai, exécute `continue`
 - `continue` : Passe à l'itération suivante
 
-```text
+```plaintext
 [[ "${line}" =~ ^# ]] && continue
 ```
 - `=~` : Opérateur de correspondance regex
@@ -473,7 +473,7 @@ graph TB
 
 ##### Ajout au tableau
 
-```text
+```plaintext
 versions+=("${line}")
 ```
 - `+=` : Opérateur d'ajout
@@ -481,7 +481,7 @@ versions+=("${line}")
 
 ##### Redirection d'entrée
 
-```text
+```plaintext
 done < "${VERSIONS_FILE}"
 ```
 - `< file` : Envoie le contenu du fichier dans stdin de la boucle
@@ -490,7 +490,7 @@ done < "${VERSIONS_FILE}"
 
 #### 5.3 Vérification du tableau
 
-```text
+```plaintext
 if [[ ${#versions[@]} -eq 0 ]]; then
     log_warning "No test versions found in ${VERSIONS_FILE}"
     log_info "Using default versions: py310, py311"
@@ -509,7 +509,7 @@ fi
 
 #### 5.4 Exécution séquentielle
 
-```text
+```plaintext
 local total=${#versions[@]}
 local current=0
 
@@ -556,19 +556,19 @@ sequenceDiagram
 **Éléments clés** :
 
 1. **Le traitement de la boucle "for"** :
-   ```text
+   ```plaintext
    for env in "${versions[@]}"; do
    ```
    - Itère sur chaque élément du tableau
    - `"${versions[@]}"` : Tous les éléments (quotés pour gérer les espaces)
 2. **Incrémentation** :
-   ```text
+   ```plaintext
    ((current++))
    ```
    - `(( ))` : Contexte arithmétique
    - `current++` : Post-incrémentation
 3. **Test conditionnel d'échec** :
-   ```text
+   ```plaintext
    if ! tox -e "${env}"; then
    ```
    - `!` : Négation "-" vraie si la commande ÉCHOUE
@@ -581,7 +581,7 @@ sequenceDiagram
 
 #### 5.5 Message de succès final
 
-```text
+```plaintext
 echo ""
 log_success "All tests passed! (${total}/${total})"
 return 0
@@ -595,7 +595,7 @@ return 0
 
 ### Section 6 : Point d'entrée main()
 
-```text
+```plaintext
 main() {
     log_info "Starting sequential test execution"
     log_info "Working directory: ${PROJECT_ROOT}"
@@ -633,7 +633,7 @@ graph TD
 | `1`   | Échec           | Au moins un test échoué |
 
 **Appel du script** :
-```text
+```plaintext
 main "$@"
 ```
 - `"$@"` : Tous les arguments passés au script
@@ -682,7 +682,7 @@ graph TB
 
 ### Exemple 1 : Utilisation standard
 
-```text
+```plaintext
 $ ./test.bash
 [INFO] Starting sequential test execution
 [INFO] Working directory: /home/user/project
@@ -725,7 +725,7 @@ $ echo $?
 
 ### Exemple 2 : Échec sur py311
 
-```text
+```plaintext
 $ ./test.bash
 [INFO] Starting sequential test execution
 [INFO] Working directory: /home/user/project
@@ -763,7 +763,7 @@ $ echo $?
 
 ### Exemple 3 : Fichier versions.txt manquant
 
-```text
+```plaintext
 $ ./test.bash
 [INFO] Starting sequential test execution
 [INFO] Working directory: /home/user/project
@@ -789,7 +789,7 @@ Running tests with py311
 
 ### Exemple 4 : Fichier personnalisé
 
-```text
+```plaintext
 $ cat my-versions.txt
 py312
 pypy310
@@ -849,7 +849,7 @@ graph TD
 
 ### Codes de sortie
 
-```text
+```plaintext
 $ ./test.bash
 $ echo $?
 0  # Succès
@@ -860,7 +860,7 @@ $ echo $?
 ```
 
 **Utilisation dans un workflow** :
-```text
+```plaintext
 #!/bin/bash
 ./test.bash
 if [ $? -eq 0 ]; then
@@ -892,22 +892,22 @@ fi
 ## Commandes pour aller plus loin
 
 ### Vérifier la syntaxe
-```text
+```plaintext
 bash -n test.bash  # Vérifie sans exécuter
 ```
 
 ### Mode debug
-```text
+```plaintext
 bash -x test.bash  # Affiche chaque commande avant exécution
 ```
 
 ### Vérifier encodage
-```text
+```plaintext
 file test.bash  # Doit afficher: ASCII text executable
 ```
 
 ### Tester avec différentes versions
-```text
+```plaintext
 echo -e "py310\npy311" > test-versions.txt
 ./test.bash test-versions.txt
 ```

@@ -87,7 +87,7 @@ graph TB
 
 ### Section 1: Shebang and Options
 
-```text
+```plaintext
 #!/usr/bin/env bash
 ```
 
@@ -100,7 +100,7 @@ graph TB
 
 ---
 
-```text
+```plaintext
 set -euo pipefail
 ```
 
@@ -113,7 +113,7 @@ set -euo pipefail
 | `-o pipefail` | Pipe fail      | In a pipe, fails if any command fails |
 
 **Impact Example**:
-```text
+```plaintext
 # Without -e
 grep "pattern" file.txt  # Fails
 echo "Continue..."       # Still executes
@@ -128,7 +128,7 @@ echo "Continue..."       # DOES NOT EXECUTE
 
 ### Section 2: Color Constants
 
-```text
+```plaintext
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
@@ -155,7 +155,7 @@ readonly NC='\033[0m'
 
 ### Section 3: Path Determination
 
-```text
+```plaintext
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ```
 
@@ -189,7 +189,7 @@ graph LR
 
 ---
 
-```text
+```plaintext
 readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 ```
 
@@ -206,7 +206,7 @@ readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 ---
 
-```text
+```plaintext
 readonly VERSIONS_FILE="${1:-${PROJECT_ROOT}/.tox-config/versions.txt}"
 ```
 
@@ -219,7 +219,7 @@ readonly VERSIONS_FILE="${1:-${PROJECT_ROOT}/.tox-config/versions.txt}"
 - Otherwise → use `${PROJECT_ROOT}/.tox-config/versions.txt`
 
 **Examples**:
-```text
+```plaintext
 # Without argument
 ./test.bash
 # VERSIONS_FILE = "/home/user/project/.tox-config/versions.txt"
@@ -233,7 +233,7 @@ readonly VERSIONS_FILE="${1:-${PROJECT_ROOT}/.tox-config/versions.txt}"
 
 ### Section 4: Logging Functions
 
-```text
+```plaintext
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $*"
 }
@@ -251,14 +251,14 @@ log_info() {
 | `$*`         | All arguments passed to the function       |
 
 **Usage**:
-```text
+```plaintext
 log_info "Starting tests"
 # Displays in blue: [INFO] Starting tests
 ```
 
 ---
 
-```text
+```plaintext
 log_error() {
     echo -e "${RED}[ERROR]${NC} $*" >&2
 }
@@ -287,7 +287,7 @@ graph LR
 
 ### Section 5: Main Function run_tests()
 
-```text
+```plaintext
 run_tests() {
     cd "${PROJECT_ROOT}"
 ```
@@ -298,7 +298,7 @@ run_tests() {
 
 #### 5.1 File Existence Check
 
-```text
+```plaintext
 if [[ ! -f "${VERSIONS_FILE}" ]]; then
     log_error "File not found: ${VERSIONS_FILE}"
     log_info "Using default versions: py310, py311"
@@ -333,7 +333,7 @@ graph TD
 
 #### 5.2 Reading versions.txt
 
-```text
+```plaintext
 local versions=()
 while IFS= read -r line || [[ -n "${line}" ]]; do
     # Trim leading and trailing whitespace (without xargs)
@@ -351,14 +351,14 @@ done < "${VERSIONS_FILE}"
 **Let's break down this complex loop**:
 
 ##### Array Declaration
-```text
+```plaintext
 local versions=()
 ```
 - `local`: Variable local to function
 - `()`: Empty array
 
 ##### Reading Loop
-```text
+```plaintext
 while IFS= read -r line || [[ -n "${line}" ]]; do
 ```
 
@@ -373,7 +373,7 @@ while IFS= read -r line || [[ -n "${line}" ]]; do
 
 ##### Whitespace Trimming
 
-```text
+```plaintext
 line="${line#"${line%%[![:space:]]*}"}"  # Trim leading
 line="${line%"${line##*[![:space:]]}"}"  # Trim trailing
 ```
@@ -414,14 +414,14 @@ graph TB
 
 ##### Line Filtering
 
-```text
+```plaintext
 [[ -z "${line}" ]] && continue
 ```
 - `-z`: True if string empty (zero length)
 - `&&`: If true, execute `continue`
 - `continue`: Skip to next iteration
 
-```text
+```plaintext
 [[ "${line}" =~ ^# ]] && continue
 ```
 - `=~`: Regex matching operator
@@ -429,7 +429,7 @@ graph TB
 
 ##### Adding to Array
 
-```text
+```plaintext
 versions+=("${line}")
 ```
 - `+=`: Append operator
@@ -439,7 +439,7 @@ versions+=("${line}")
 
 #### 5.3 Array Verification
 
-```text
+```plaintext
 if [[ ${#versions[@]} -eq 0 ]]; then
     log_warning "No test versions found in ${VERSIONS_FILE}"
     log_info "Using default versions: py310, py311"
@@ -458,7 +458,7 @@ fi
 
 #### 5.4 Sequential Execution
 
-```text
+```plaintext
 local total=${#versions[@]}
 local current=0
 
@@ -505,19 +505,19 @@ sequenceDiagram
 **Key elements** :
 
 1. **For loop** :
-   ```text
+   ```plaintext
    for env in "${versions[@]}"; do
    ```
    - Iterates over each array element
    - `"${versions[@]}"`: All elements (quoted to handle spaces)
 2. **Increment** :
-   ```text
+   ```plaintext
    ((current++))
    ```
    - `(( ))`: Arithmetic context
    - `current++`: Post-increment
 3. **Conditional failure test** :
-   ```text
+   ```plaintext
    if ! tox -e "${env}"; then
    ```
    - `!`: Negation - true if command FAILS
@@ -530,7 +530,7 @@ sequenceDiagram
 
 ### Section 6: Entry Point main()
 
-```text
+```plaintext
 main() {
     log_info "Starting sequential test execution"
     log_info "Working directory: ${PROJECT_ROOT}"
@@ -610,7 +610,7 @@ graph TB
 
 ### Example 1: Standard Usage
 
-```text
+```plaintext
 $ ./test.bash
 [INFO] Starting sequential test execution
 [INFO] Working directory: /home/user/project
@@ -641,7 +641,7 @@ $ echo $?
 
 ### Example 2: Failure on py311
 
-```text
+```plaintext
 $ ./test.bash
 [INFO] Starting sequential test execution
 [... py310 passes ...]
@@ -685,7 +685,7 @@ graph TD
 
 ### Exit Codes
 
-```text
+```plaintext
 $ ./test.bash
 $ echo $?
 0  # Success

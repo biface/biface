@@ -102,7 +102,7 @@ TDD and test automation are natural partners:
 
 ### The Automated Testing Workflow
 
-```text
+```plaintext
 Code Change
     ↓
 Commit & Push
@@ -149,7 +149,7 @@ Success/Failure Notification
 
 Together, Tox and Pytest provide a complete testing solution:
 
-```bash
+```plaintext
 # Local development
 tox -e py312          # Test on Python 3.12
 tox -e pre-push       # Full workflow before pushing
