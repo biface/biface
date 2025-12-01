@@ -196,7 +196,7 @@ readonly PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 **Goes up 2 levels to reach project root.**
 
 **Path**:
-```
+```plaintext
 /home/user/project/.tox-config/scripts  ← SCRIPT_DIR
                   ↑ (../)
 /home/user/project/.tox-config
