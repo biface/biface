@@ -15,6 +15,14 @@ In my free time, I work on several **Python** projects, exploring:
 - **Translation management**, inspired by Babel, with support for multiple translations and plural forms,
 - **Upcoming projects** related to frameworks like Django.
 
+For several months now, I have been interested in Rust, which seems to me to be a potential successor to the C language.
+Over the past few months, I have started a few projects that have allowed me to resume work that I stopped about thirty 
+years ago :
+
+- [**Dynamic CLI**](https://gihub.com/biface/dcli) also published on [crates.io](https://crates.io/crates/dynamic-cli)
+- [**Chromatography**](https//github.com/biface/chromatography) not yet published
+- [**oxiflow**](htpps://github.com/biface/oxiflow) reserved on [crates.io](https://crates.io/crates/oxiflow) but not yet developed.
+
 I also work on automation topics and processes:
 
 - [Python test automation with Tox](automation/automation.md) in a virtualized environment using virtualenv, and I am
