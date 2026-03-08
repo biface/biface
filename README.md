@@ -19,7 +19,7 @@ For several months now, I have been interested in Rust, which seems to me to be 
 Over the past few months, I have started a few projects that have allowed me to resume work that I stopped about thirty 
 years ago :
 
-- [**Dynamic CLI**](https://gihub.com/biface/dcli) also published on [crates.io](https://crates.io/crates/dynamic-cli)
+- [**Dynamic CLI**](https://github.com/biface/dcli) also published on [crates.io](https://crates.io/crates/dynamic-cli)
 - [**Chromatography**](https://github.com/biface/chromatography) not yet published
 - [**oxiflow**](https://github.com/biface/oxiflow) reserved on [crates.io](https://crates.io/crates/oxiflow) but not yet developed.
 
