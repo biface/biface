@@ -11,8 +11,8 @@ with the best tools for the job.
 In my free time, I work on several **Python** projects, exploring:
 
 - [**Nested dictionaries**](https://github.com/biface/ndt)
-- **Simple advanced Data Structures** (graphs, trees, stacks, etc.),
-- **Translation management**, inspired by Babel, with support for multiple translations and plural forms,
+- [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) (graphs, trees, stacks, etc.),
+- [**Translation management**](https://github.com/biface/i18n), inspired by Babel, with support for multiple translations and plural forms,
 - **Upcoming projects** related to frameworks like Django.
 
 For several months now, I have been interested in Rust, which seems to me to be a potential successor to the C language.
