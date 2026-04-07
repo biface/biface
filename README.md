@@ -10,7 +10,8 @@ with the best tools for the job.
 
 In my free time, I work on several **Python** projects, exploring:
 
-- [**Nested dictionaries**](https://github.com/biface/ndt)
+- [**Nested dictionaries**](https://github.com/biface/ndt) an implementation of nested dictionaries with support for key hierarchies. 
+- [**Automata**](https://github.com/biface/automata) a study of automata, languages, and formal grammars
 - [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) (graphs, trees, stacks, etc.),
 - [**Translation management**](https://github.com/biface/i18n), inspired by Babel, with support for multiple translations and plural forms,
 - **Upcoming projects** related to frameworks like Django.
@@ -21,7 +22,7 @@ years ago :
 
 - [**Dynamic CLI**](https://github.com/biface/dcli) also published on [crates.io](https://crates.io/crates/dynamic-cli)
 - [**Chromatography**](https://github.com/biface/chromatography) not yet published
-- [**oxiflow**](https://github.com/biface/oxiflow) reserved on [crates.io](https://crates.io/crates/oxiflow) but not yet developed.
+- [**Oxiflow**](https://github.com/biface/oxiflow) reserved on [crates.io](https://crates.io/crates/oxiflow) but not yet developed.
 
 I also work on automation topics and processes:
 
