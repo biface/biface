@@ -21,7 +21,7 @@ Over the past few months, I have started a few projects that have allowed me to 
 years ago :
 
 - [**Dynamic CLI**](https://github.com/biface/dcli) also published on [crates.io](https://crates.io/crates/dynamic-cli)
-- [**Chromatography**](https://github.com/biface/chromatography) not yet published
+- [**Chromatography**](https://github.com/biface/chromatography) recently published on [crates.io](https://crates.io/crates/chrom-rs)
 - [**Oxiflow**](https://github.com/biface/oxiflow) reserved on [crates.io](https://crates.io/crates/oxiflow) but not yet developed.
 
 I also work on automation topics and processes:
