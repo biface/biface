@@ -4,19 +4,18 @@
 name: Python CI - Coverage
 ```
 
-Le nom du pipeline dans un objectif d'enchaînement automatisé de travaux
-importe, car il sera utilisé pour déclencher ou non un autre flux de travail.
+← [Pipelines](../../pipelines/pipelines.md) | ← [Pipeline Tests](../../pipelines/tests.fr.md)
+
+Le nom du pipeline importe pour le chaînage automatisé — c'est lui qui est référencé dans le `workflows:`
+du déclencheur `workflow_run` qui suit dans la chaîne.
 
 ## Vue d'ensemble
 
-Ce pipeline GitHub Actions mesure la couverture de code de votre projet Python
-et télécharge automatiquement les rapports vers Codecov. Il s'exécute **après**
-le pipeline de tests et uniquement si celui-ci a réussi.
+Ce pipeline GitHub Actions mesure la couverture de code et télécharge automatiquement le rapport vers
+Codecov. Il s'exécute **après** le pipeline [Tests](../../pipelines/tests.fr.md), et uniquement si celui-ci
+a réussi — et uniquement sur les branches où la couverture a un sens pour la décision de release.
 
 ## Déclenchement du pipeline
-
-Ce pipeline utilise un mécanisme de **déclenchement en cascade**
-(`workflow_run`), ce qui le rend dépendant d'un autre pipeline :
 
 ```yaml
 on:
@@ -25,29 +24,22 @@ on:
     types:
       - completed
     branches:
-      - "updates/**"     # Toutes les branches de versions (updates/1.0.0, updates/1.1.0, etc.)
-      - "staging/**"     # Toutes les branches de staging (staging/1.0.x, staging/1.1.x, etc.)
-      - main
-      - master
+      - "staging/**"   # release candidates
+      - master         # production
 ```
 
 ### Conditions de déclenchement
 
-1. **Pipeline parent** : Se déclenche uniquement après l'exécution complète du
-   workflow "Python CI - Tests"
-2. **Statut requis** : Le pipeline de tests doit avoir réussi
-   (`conclusion == 'success'`)
-3. **Branches concernées** :
-   - `updates/**` : Toutes les branches de versions (ex: `updates/1.0.0`,
-     `updates/1.1.0`)
-   - `staging/**` : Toutes les branches de staging (ex: `staging/1.0.x`,
-     `staging/1.1.x`)
-   - `main` : Branche principale
-   - `master` : Branche principale alternative
+1. **Pipeline parent** : se déclenche uniquement après l'exécution complète du pipeline "Python CI - Tests"
+2. **Statut requis** : le pipeline de tests doit avoir réussi (`conclusion == 'success'`)
+3. **Branches concernées** : uniquement `staging/**` (préparation de release) et la branche principale
+   (production)
 
-**Important** : Ce pipeline ne se déclenche **jamais** directement. Il attend
-toujours que le pipeline de tests se termine avec succès sur l'une des branches
-spécifiées.
+**Ce qui ne déclenche pas ce pipeline** : les branches `updates/X.Y.0` et `feature/*`. Sur ces branches, le
+code est encore en développement — une mesure de couverture y serait partielle et sans valeur pour la
+décision de release. Voir
+[Tests d'intégration](https://gitlab.com/biface/biface/-/wikis/fr/controlled-delivery-software/test-management/integrate)
+côté wiki pour la logique générale de restriction des étapes coûteuses aux bons moments du pipeline.
 
 ## Architecture du pipeline
 
@@ -59,28 +51,12 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 ```
 
-### Condition d'exécution
-
-```yaml
-if: ${{ github.event.workflow_run.conclusion == 'success' }}
-```
-
-Le job `coverage` ne s'exécute que si le workflow parent (tests) s'est terminé
-avec succès. Si les tests échouent, ce pipeline est complètement ignoré. Cette
-approche permet d'optimiser les ressources consommées dans l'automatisation des
-flux de travaux. Dans le cas présent, il ne **sert à rien** d'enclencher le
-traitement de la couverture du code sur le depôt GitHub en cas d'échec des
-tests. Dans cette hypothèse, il vaut mieux revenir sur les branches locales,
-pour analyser, avec les erreurs publiées du précédent flux de travail, et les
-traiter. D'expérience, notamment avec les mécanismes de complétion et d'aide à
-la production du code, les environnements de développement intégrés peuvent
-ajouter des directives non souhaitées.
-
 ### Environnement d'exécution
 
-- **Système d'exploitation** : Ubuntu (dernière version disponible)
-- **Version Python** : 3.12 (version unique, contrairement au pipeline de tests)
-- **Runner** : Machine virtuelle fournie par GitHub Actions
+- **Version Python** : 3.12 uniquement (contrairement au pipeline de tests, qui couvre cinq versions) — la
+  couverture est mesurée sur une version de référence stable, pas sur toute la matrice. Voir
+  [Configuration tox § coverage](../../tests/python/tox.fr.md#coverage--rapport-de-couverture) pour le
+  raisonnement complet.
 
 ## Étapes détaillées du pipeline
 
@@ -88,97 +64,89 @@ ajouter des directives non souhaitées.
 
 ```yaml
 - name: Checkout repository
-  uses: actions/checkout@v4
+  uses: actions/checkout@v6
+  with:
+    ref: ${{ github.event.workflow_run.head_sha }}
 ```
 
-Clone le dépôt Git dans l'environnement d'exécution pour accéder au code source
-et aux fichiers de configuration.
+Même nécessité que pour le pipeline Tests : ce pipeline est déclenché par `workflow_run`, il doit donc
+explicitement préciser quel commit récupérer — `head_sha`, le commit exact qui a déclenché le pipeline
+Tests, pas seulement le nom de la branche.
 
 ### Étape 2 : Configuration de Python
 
 ```yaml
 - name: Setup Python
-  uses: actions/setup-python@v4
+  uses: actions/setup-python@v5
   with:
     python-version: "3.12"
 ```
 
-Installe Python 3.12 spécifiquement. Contrairement au pipeline de tests qui
-utilise une matrice, ici une seule version est nécessaire pour générer le
-rapport de couverture. Par contre, on peut se demander pourquoi refaire les
-tests alors qu'ils ont déjà été réalisés précédemment : en fait, on ne peut pas
-reprendre les résultats du précédent processus car ils sont étanches entre-eux.
+Une seule version, fixe — voir la justification ci-dessus.
 
-### Étape 3 : Installation des dépendances
+### Étape 3 : Installation de uv et de tox
 
 ```yaml
-- name: Install dependencies
-  run: |
-    python -m pip install --upgrade pip
-    pip install tox
+- name: Install uv
+  uses: astral-sh/setup-uv@v4
+
+- name: Install tox
+  run: uv pip install --system tox tox-uv
 ```
 
-Prépare l'environnement en :
-
-1. Mettant à jour `pip` vers la dernière version
-2. Installant `tox` pour gérer l'exécution des tests avec mesure de couverture
+Identique aux pipelines Qualité et Tests.
 
 ### Étape 4 : Exécution des tests avec couverture
 
 ```yaml
 - name: Run tests with coverage
-  run: tox -e gh-ci
+  run: tox -e coverage
 ```
 
-Lance les tests en utilisant le même environnement `gh-ci` que le pipeline de
-tests, mais cette fois-ci en générant également des données de couverture de
-code (pourcentage de code testé).
+Réutilise l'environnement tox `coverage` — voir
+[Configuration tox § coverage](../../tests/python/tox.fr.md#coverage--rapport-de-couverture). Important :
+ce pipeline **réexécute** les tests, il ne réutilise pas les résultats du pipeline Tests précédent — chaque
+job GitHub Actions tourne dans un environnement isolé et étanche, les résultats d'un job ne sont pas
+directement accessibles à un autre sans étape explicite de transfert d'artefact.
 
 ### Étape 5 : Téléchargement vers Codecov
 
 ```yaml
 - name: Upload coverage reports to Codecov
-  if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
   uses: codecov/codecov-action@v5
   with:
     token: ${{ secrets.CODECOV_TOKEN }}
     fail_ci_if_error: true
 ```
 
-Cette étape finale télécharge le rapport de couverture vers Codecov, mais
-**uniquement** pour les branches principales (`main` ou `master`).
+Aucune condition supplémentaire sur cette étape : la restriction aux branches `staging/**`/`main` est déjà
+posée au niveau du déclencheur du pipeline (`on.workflow_run.branches`) — il n'y a pas besoin de la répéter
+ici.
 
-**Paramètres importants** :
-
-- `token` : Utilise un jeton secret stocké dans les secrets GitHub pour
-  s'authentifier auprès de Codecov
-- `fail_ci_if_error: true` : Si le téléchargement échoue, le pipeline entier
-  échoue également, garantissant qu'on détecte les problèmes de reporting
-
-**Comportement selon la branche** :
-
-- Sur `main` ou `master` : Le rapport est téléchargé vers Codecov
-- Sur `updates/**` ou `staging/**` : Les tests sont exécutés avec couverture,
-  mais le rapport n'est **pas** téléchargé (pour éviter de polluer Codecov avec
-  des branches temporaires)
+`fail_ci_if_error: true` : un échec d'upload fait échouer tout le pipeline. Un seuil de couverture non
+atteint ou une indisponibilité de Codecov est donc un signal bloquant, pas une simple alerte ignorée.
 
 ## Flux de travail complet
 
-```plaintext
-1. Push de code sur une branche concernée
+```
+1. Push sur une branche staging/** ou main
    ↓
-2. Pipeline "Python CI - Tests" se déclenche et s'exécute
+2. Pipeline "Python CI - Quality" — doit réussir
    ↓
-3. Si les tests réussissent → Pipeline "Coverage" se déclenche
+3. Pipeline "Python CI - Tests" — doit réussir
    ↓
-4. Exécution des tests avec mesure de couverture
+4. Pipeline "Python CI - Coverage" se déclenche
    ↓
-5. Si branche = main/master → Téléchargement vers Codecov
+5. Téléchargement vers Codecov
 ```
 
 ## Résultat
 
-- **Succès** ✅ : Les tests passent avec succès et le rapport de couverture est
-  généré (et téléchargé si sur `main`/`master`)
-- **Échec** ❌ : Soit les tests échouent, soit le téléchargement vers Codecov
-  échoue (uniquement sur `main`/`master`)
+- **Succès** ✅ : les tests passent et le rapport est téléchargé vers Codecov
+- **Échec** ❌ : soit les tests échouent dans ce run, soit le téléchargement vers Codecov échoue
+
+## Voir aussi
+
+- [Pipeline Tests](../../pipelines/tests.fr.md) — déclencheur de celui-ci
+- [Configuration tox § coverage](../../tests/python/tox.fr.md)
+- [Coverage pipeline — English version](./coverage.en.md)
