@@ -1,6 +1,9 @@
 bandit
+basedpyright
 black
 flake8
 isort
+pytest
 pytest-cov
 tox
+tox-uv

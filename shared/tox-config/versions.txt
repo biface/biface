@@ -1,0 +1,32 @@
+# Configuration des versions Python pour les tests
+# ================================================
+#
+# Ce fichier définit :
+# 1. Les versions Python à tester séquentiellement (une par ligne)
+# 2. La version utilisée pour générer le rapport de couverture
+#
+# Format :
+# - Une version par ligne (ex: py310, py311, pypy39)
+# - Les lignes vides et commençant par # sont ignorées
+# - La ligne "coverage:" définit la version pour le rapport de couverture
+#
+# Exemples de versions supportées :
+# - py39, py310, py311, py312, py313
+# - pypy39, pypy310
+#
+# Modification :
+# Pour ajouter/retirer des versions, éditez simplement ce fichier
+# Pas besoin de modifier tox.ini
+#
+# ================================================
+
+# Versions Python à tester (ordre d'exécution)
+py310
+py311
+#py312
+py313
+py314
+
+# Exemples pour le futur :
+# py315
+# pypy310
