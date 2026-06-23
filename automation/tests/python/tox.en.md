@@ -1,347 +1,247 @@
-# Tox Configuration - Complete Guide
+# Tox Configuration — Reference Guide
 
-## What is Tox?
+← [Automation](../../automation.en.md)
 
-**Tox** is a Python test automation tool that allows you to:
+## Overview
 
-- Create **isolated virtual environments** for each test configuration
-- Test your code across **multiple Python versions** simultaneously
-- Execute **standardized command suites** (tests, linting, formatting)
-- Guarantee test **reproducibility** between local development and CI/CD
+**Tox** is an automation tool that creates isolated virtual environments to run reproducible commands.
+Combined with **tox-uv**, which replaces pip with uv for dependency installation, it forms the foundation
+of the reference quality workflow.
 
-### Why Use Tox?
+The `tox.ini` file centralises the definition of all environments: tests, quality checks, formatting,
+security, and complete workflows. A single source of truth, usable identically locally and in CI/CD.
 
-#### For Local Testing
-
-- **Complete isolation**: Each test environment is independent, avoiding
-  dependency conflicts
-- **Consistency**: You test in exactly the same conditions as CI/CD
-- **Time-saving**: A single command (`tox`) to run all tests and checks
-- **Multi-version**: Easily test your code on Python 3.9, 3.10, 3.11, and 3.12
-  locally
-
-#### For Remote Repository (CI/CD)
-
-- **Standardization**: The same Tox commands work locally and in GitHub Actions
-- **Simplified maintenance**: Modifying a test = modifying only `tox.ini`, not
-  GitHub workflows
-- **Traceability**: Developers can reproduce CI tests exactly locally
-- **Flexibility**: Different Tox environments for different needs (tests,
-  quality, security)
+> **Ready-to-copy template**: [`shared/tox.ini`](../../../shared/tox.ini) and
+> [`shared/tox-config/`](../../../shared/tox-config/) in this repository. To adopt this configuration in a
+> project: copy both, rename `tox-config/` to `.tox-config/` (with the leading dot), replace
+> `<package_name>` with the actual package name in `tox.ini`, `coverage.sh.txt`/`test.sh.txt` (to be renamed
+> to `.sh`), and adjust the Python versions in `envlist`, `[gh-actions]`, and `.tox-config/versions.txt`.
 
 ---
 
-## General Configuration
+## The `.tox-config/` architecture
+
+Configuration is separated from `tox.ini` into a dedicated directory. This allows Python versions or
+dependencies to be changed without modifying `tox.ini`.
+
+```text
+.tox-config/
+├── versions.txt          ← Python versions to test (one per line, # to comment out)
+├── coverage-version.txt  ← Python version for the coverage report
+├── requirements/
+│   ├── base.txt          ← pytest, pytest-cov
+│   ├── full.txt          ← all tools combined
+│   ├── format.txt        ← black, isort
+│   ├── linter.txt        ← flake8
+│   ├── security.txt      ← bandit
+│   └── type-check.txt   ← basedpyright
+└── scripts/
+    ├── test.sh           ← sequential multi-version execution
+    └── coverage.sh       ← coverage report generation
+```
+
+---
+
+## Section by section
+
+### `[tox]` — General configuration
 
 ```ini
 [tox]
-minversion = 3.24.5
-envlist = py39, py310, py311, py312
+minversion = 4.0
+requires = tox-uv
+toxworkdir = {toxinidir}/.tox
 ```
 
-- **minversion**: Minimum required Tox version (3.24.5)
-- **envlist**: List of Python environments to test by default (Python 3.9 to
-  3.12)
+- `minversion = 4.0`: guarantees compatibility with the features used
+- `requires = tox-uv`: installs the uv plugin automatically if absent
+- `toxworkdir`: working directory for the virtual environments
 
-### GitHub Actions Integration
+### `[gh-actions]` — GitHub Actions integration
 
 ```ini
 [gh-actions]
 python =
-    3.9: py39
     3.10: py310
     3.11: py311
     3.12: py312
+    3.13: py313
+    3.14: py314
 ```
 
-This section **maps** GitHub Actions Python versions to Tox environments. When
-GitHub Actions uses Python 3.10, Tox automatically activates the `py310`
-environment.
+Maps the Python versions from the GitHub Actions matrix to tox environments. When GitHub Actions uses
+Python 3.12, tox automatically activates the `py312` environment.
 
----
-
-## Main Test Environment
-
-### [testenv] - Unit Tests with Coverage
+### `[testenv]` — Default test environment
 
 ```ini
 [testenv]
-description = Run unit tests with coverage
-```
-
-This default environment applies to all Python environments (py39, py310, py311,
-py312).
-
-#### PYTHONPATH Configuration
-
-```ini
+uv_seed = true
 setenv =
     PYTHONPATH = {toxinidir}/src:{toxinidir}/tests
-```
-
-Sets the Python path for imports to work correctly:
-
-- `{toxinidir}`: Project root directory
-- Adds `src` and `tests` to PYTHONPATH
-
-#### Dependencies
-
-```ini
 deps =
-    pytest
-    pytest-cov
-```
-
-Installs the necessary tools for:
-
-- **pytest**: Testing framework
-- **pytest-cov**: Code coverage measurement plugin
-
-#### Execution Commands
-
-```ini
+    -r {toxinidir}/.tox-config/requirements/base.txt
 commands =
-    pytest --import-mode=importlib \
-           --cov=ndict_tools \
-           --cov-report=term-missing \
-           --cov-report=xml:coverage/coverage.xml \
-           --cov-report=html:coverage/coverage_html tests
+    pytest --import-mode=importlib --cov=<package_name> --cov-report=term-missing
 ```
 
-Runs pytest with:
+- `uv_seed = true`: seeds the uv environment with pip — necessary for tools that call pip directly
+- `PYTHONPATH`: lets imports work without manipulating `sys.path`
+- `--import-mode=importlib`: modern import mode, avoids a class of silent bugs related to module resolution
 
-- `--import-mode=importlib`: Modern and recommended import mode
-- `--cov=ndict_tools`: Measures coverage of the `ndict_tools` package
-- `--cov-report=term-missing`: Displays uncovered lines in terminal
-- `--cov-report=xml`: Generates XML report (used by Codecov)
-- `--cov-report=html`: Generates interactive HTML report
+This environment applies to every Python environment (`py310`, `py311`, etc.) that has no specific
+configuration of its own.
 
 ---
 
-## Individual Verification Tools
+## Verification environments
 
-### [testenv:mypy] - Type Checking
+### `basedpyright` — Type checking
 
 ```ini
-[testenv:mypy]
-description = Type checking with mypy
+[testenv:basedpyright]
+deps =
+    -r {toxinidir}/.tox-config/requirements/type-check.txt
+allowlist_externals = bash
+commands =
+    bash -c "basedpyright src; code=$?; [ $code -le 1 ]"
 ```
 
-Checks Python type annotations consistency to detect typing errors before
-execution.
+**basedpyright** is a strict static type checker, based on Microsoft's Pyright engine. Stricter than mypy,
+it detects type mismatches, non-existent attributes, and incorrect calls.
 
-### [testenv:flake8] - Linting
+The bash wrapper is necessary because basedpyright distinguishes two output levels:
+- Code `0`: no issues
+- Code `1`: warnings (non-blocking)
+- Code `2`: errors (blocking)
+
+`[ $code -le 1 ]` tolerates warnings while still blocking on errors.
+
+### `flake8` — Lint
 
 ```ini
 [testenv:flake8]
-description = Lint the code with flake8
-```
-
-Analyzes code to detect:
-
-- Syntax errors
-- PEP 8 convention violations
-- Excessive complexity
-- Dead or unused code
-
-### [testenv:black-check] - Format Checking
-
-```ini
-[testenv:black-check]
-description = Check code formatting with black (no changes)
 commands =
-    black --check --diff src tests
+    flake8 src tests
 ```
 
-Checks if code respects Black formatting **without modifying files**:
+Checks style conventions not covered by black: cyclomatic complexity, unused imports, unused variables.
+Modifies nothing.
 
-- `--check`: Verification mode only
-- `--diff`: Shows differences if formatting is incorrect
-
-### [testenv:isort-check] - Import Checking
+### `black-check` and `isort-check` — Formatting verification
 
 ```ini
-[testenv:isort-check]
-description = Check import sorting with isort (no changes)
+commands =
+    black --check --diff --target-version py310 src tests
+    isort --check-only --diff src tests
 ```
 
-Checks that imports are sorted according to conventions **without modifying
-files**.
+Verification-only modes (`--check`, `--check-only`). Used in CI to fail if the code isn't correctly
+formatted, without modifying files.
 
-### [testenv:bandit] - Security Analysis
+### `bandit` — Security
 
 ```ini
-[testenv:bandit]
-description = Run security analysis with bandit
 commands =
     bandit -r src
 ```
 
-Scans code for common security vulnerabilities:
-
-- Use of dangerous functions
-- Cryptographic security issues
-- Potential injections
-- `-r`: Recursive analysis
+Scans `src/` for dangerous patterns: calls to `eval`, use of deprecated cryptography modules, potential
+injections. The analysis doesn't cover `tests/`.
 
 ---
 
-## Automatic Correction Tools
+## Auto-fix environments
 
-### [testenv:black] - Automatic Formatting
+### `black` and `isort` — Automatic formatting
 
 ```ini
-[testenv:black]
-description = Auto-format code with black
 commands =
-    black src tests
-```
-
-Automatically reformats code according to Black style (without `--check`).
-
-### [testenv:isort] - Automatic Import Sorting
-
-```ini
-[testenv:isort]
-description = Auto-sort imports with isort
-```
-
-Automatically sorts imports according to conventions.
-
-### [testenv:format] - Complete Formatting
-
-```ini
-[testenv:format]
-description = Auto-format code (black + isort)
-commands =
-    black src tests
+    black --target-version py310 src tests
     isort src tests
 ```
 
-Combined environment that applies **both** Black and isort for complete
-formatting.
+Modify files in place. Use locally, never in CI.
+
+### `format` — Complete formatting in one command
+
+```ini
+commands =
+    black --target-version py310 src tests
+    isort src tests
+```
+
+Convenient alias to apply black and isort in a single invocation.
+
+### `coverage` — Coverage report
+
+```ini
+[testenv:coverage]
+basepython = python3.12
+commands =
+    pytest --import-mode=importlib \
+    --cov=<package_name> \
+    --cov-append \
+    --cov-report=term-missing \
+    --cov-report=xml:{toxinidir}/coverage/coverage.xml \
+    --cov-report=html:{toxinidir}/coverage/coverage_html tests
+```
+
+Generates three report formats:
+- Terminal: uncovered lines visible immediately
+- XML (`coverage/coverage.xml`): for CI tools (Codecov, SonarQube)
+- HTML (`coverage/coverage_html/`): for interactive local reading
+
+`--cov-append` accumulates results when several runs are chained.
 
 ---
 
-## Complete Workflows
+## Complete workflows
 
-### [testenv:pre-push] - Local Pre-Push Workflow
+### `pre-push` — Local quality gate
 
 ```ini
 [testenv:pre-push]
-description = Complete local workflow before push (format + checks + tests)
-deps =
-    -r requirements.test.txt
-    mypy
 commands =
-    # 1. Auto-formatting
-    black src tests
+    black --target-version py310 src tests   # 1. formatting
     isort src tests
-
-    # 2. Type checking
-    mypy src
-
-    # 3. Linting
-    flake8 src tests
-
-    # 4. Security
-    bandit -r src
-
-    # 5. Tests with coverage
-    pytest --import-mode=importlib \
-           --cov=ndict_tools \
-           --cov-report=term-missing \
-           --cov-report=xml:coverage/coverage.xml \
-           --cov-report=html:coverage/coverage_html tests
+    bash -c "basedpyright src; ..."          # 2. types
+    flake8 src tests                          # 3. lint
+    bandit -r src                             # 4. security
+    bash .tox-config/scripts/test.sh         # 5. multi-version tests
+    bash .tox-config/scripts/coverage.sh     # 6. coverage
 ```
 
-**Complete** environment to execute before pushing code. It combines:
+The order is deliberate: formatting comes first to avoid flake8 false positives. On failure at any step,
+execution stops.
 
-1. **Auto-formatting**: Black + isort
-2. **Type checking**: mypy
-3. **Linting**: flake8
-4. **Security**: bandit
-5. **Tests with coverage**: pytest with the production conditions of the various
-   elements seen above.
-
-**Usage**: `tox -e pre-push` before each `git push` to guarantee quality.
-
-### [testenv:ci-quality] - CI Checks (No Modifications)
-
-```ini
-[testenv:ci-quality]
-description = CI quality checks (no auto-fix, only verify)
-deps =
-    -r requirements.test.txt
-    mypy
-commands =
-    # Vérifications sans modification
-    mypy src
-    flake8 src tests
-    black --check --diff src tests
-    isort --check-only --diff src tests
-    bandit -r src
+```bash
+tox -e pre-push
 ```
 
-CI/CD version that **checks** without modifying:
+### `ci-quality` — CI verification
 
-- Uses `black --check` instead of `black`
-- Uses `isort --check-only` instead of `isort`
+Same logic as `pre-push` but without automatic formatting: uses `--check` and `--check-only`. Designed to
+fail if submitted code isn't compliant.
 
-Perfect for a CI pipeline that should fail if code is not compliant.
-
-### [testenv:ci-tests] - CI Tests
-
-```ini
-[testenv:ci-tests]
-description = CI tests with coverage (used by gh-actions matrix)
-deps =
-    -r requirements.test.txt
-commands =
-    pytest --import-mode=importlib \
-           --cov=ndict_tools \
-           --cov-report=term-missing \
-           --cov-report=xml:coverage/coverage.xml \
-           --cov-report=html:coverage/coverage_html tests
+```bash
+tox -e ci-quality
 ```
 
-Simplified environment used by GitHub Actions matrix. Executes only tests with
-coverage, without quality checks.
+### `ci-tests` — CI tests
+
+Runs pytest with coverage only. Used by the GitHub Actions matrix to test each Python version in
+parallel.
+
+```bash
+tox -e ci-tests
+```
 
 ---
 
-## Convenient Aliases
+## Tool configuration
 
-### [testenv:check] - Quick Check
-
-```ini
-[testenv:check]
-description = Quick check (no formatting, only verify)
-```
-
-Quick check without automatic formatting:
-
-- mypy
-- flake8
-- black --check
-- isort --check-only
-
-**Usage**: `tox -e check` for a quick check without modifying files.
-
-### [testenv:local] - Compatibility Alias
-
-```ini
-[testenv:local]
-description = Alias pour pre-push (rétrocompatibilité)
-```
-
-Simple alias to `pre-push` to maintain compatibility with old habits.
-
----
-
-## Tool Configuration
-
-### Flake8
+### flake8
 
 ```ini
 [flake8]
@@ -349,11 +249,8 @@ max-line-length = 88
 extend-ignore = E203, W503, E501
 ```
 
-- **max-line-length**: 88 characters (Black standard)
-- **extend-ignore**: Ignores rules incompatible with Black
-  - E203: Whitespace before ':'
-  - W503: Line break before binary operator
-  - E501: Line too long (handled by Black)
+- `88` characters: black's standard
+- `E203`, `W503`, `E501`: rules incompatible with black's style, ignored
 
 ### isort
 
@@ -361,70 +258,33 @@ extend-ignore = E203, W503, E501
 [isort]
 profile = black
 line_length = 88
+known_first_party = <package_name>
+multi_line_output = 3
+include_trailing_comma = true
 ```
 
-Black-compatible configuration:
-
-- **profile = black**: Uses Black profile
-- **line_length = 88**: Consistent with Black
-
-### mypy
-
-```ini
-[mypy]
-python_version = 3.9
-warn_return_any = true
-check_untyped_defs = true
-ignore_missing_imports = true
-```
-
-Type checking configuration:
-
-- Targets Python 3.9 as minimum version
-- Enables warnings on incomplete types
-- Ignores imports without type stubs
+The `black` profile guarantees compatibility between the two tools. `known_first_party` should be adapted
+to your package's name.
 
 ---
 
-## Usage Examples
+## Reference commands
 
-### Local Testing
-
-```plaintext
-# Test on all Python versions
-tox
-
-# Test on Python 3.12 only
-tox -e py312
-
-# Complete workflow before push
-tox -e pre-push
-
-# Quick check
-tox -e check
-
-# Automatic formatting
-tox -e format
-```
-
-### In GitHub Actions
-
-```yaml
-# The tests pipeline uses
-run: tox -e ci-tests
-```
-
-```yaml
-# A quality pipeline could use
-run: tox -e ci-quality
+```bash
+tox -e pre-push          # full local workflow
+tox -e py312             # tests on Python 3.12 only
+tox -e format            # automatic formatting
+tox -e check             # quick check, no modification
+tox -e ci-quality        # CI verification
+tox -e ci-tests          # CI tests
+tox -e coverage          # coverage report only
 ```
 
 ---
 
-## Configuration Benefits
+## See also
 
-1. **Separated environments**: Tests, quality, security are isolated
-2. **Flexibility**: Choose environment according to need
-3. **Local/remote consistency**: Same commands everywhere
-4. **Simplified maintenance**: Single file to maintain
-5. **Living documentation**: Descriptions explain each environment
+- [Configuration tox — version française](tox.fr.md)
+- [test.sh script](../shell/tox-uv-test-script.en.md)
+- [coverage.sh script](../shell/tox-uv-coverage-script.en.md)
+- [Wiki — Unit tests](https://gitlab.com/biface/biface/-/wikis/en/controlled-delivery-software/test-management/testing)

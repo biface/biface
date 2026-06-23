@@ -1,153 +1,154 @@
-# Python CI Pipeline - Tests
+# Python Tests Pipeline (CI)
 
 ```yaml
 name: Python CI - Tests
 ```
 
+← [Pipelines](./pipelines.en.md) | ← [Quality pipeline](./quality.en.md)
+
 ## Overview
 
-This _GitHub Actions Workflow_ automatically runs your Python project tests to
-ensure code quality with every change. It verifies compatibility across multiple
-Python versions.
+This GitHub Actions pipeline runs the test suite across several Python versions. It **only** triggers if
+the [Quality](./quality.en.md) pipeline succeeded — no point burning runner minutes on tests if the code
+doesn't even pass the basic checks.
 
-## Pipeline Triggers
+## Pipeline trigger
 
 ```yaml
 on:
-  push:
+  workflow_run:
+    workflows: ["Python CI - Quality"]
+    types:
+      - completed
     branches:
-      - "**"  # Toutes les branches (feature/*, hotfix/*, updates/*, staging/*)
-  pull_request:
-    branches:
-      - "**"
+      - '**'
 ```
 
-The pipeline is triggered in two situations:
-
-1. **On every push** to any repository branch (`"**"` means all branches:
-   `main`, `feature/*`, `hotfix/*`, `updates/*`, `staging-*`, etc.)
-2. **On every pull request** created or updated, regardless of the target branch
-
-## Pipeline Architecture
+This pipeline **never triggers directly** on a push or pull request — it waits for the **completion** of
+the Quality pipeline, regardless of branch. The success condition is checked at the job level, not the
+trigger level:
 
 ```yaml
 jobs:
-  test:
-    name: Run tests on Python ${{ matrix.python-version }}
+  tests:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+```
+
+If Quality fails, this job doesn't run at all — it shows up as "skipped", not "failed".
+
+## Pipeline architecture
+
+```yaml
+jobs:
+  tests:
+    name: Run Tests (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        include:
+          - python-version: '3.10'
+          - python-version: '3.11'
+          - python-version: '3.12'
+          - python-version: '3.13'
+          - python-version: '3.14'
+            continue-on-error: true
+
+    continue-on-error: ${{ matrix.continue-on-error == true }}
 ```
 
-### Matrix Testing Strategy
+### Matrix testing strategy
 
-The pipeline uses a **test matrix** to run tests across multiple Python versions
-simultaneously:
+Five Python versions tested in parallel: 3.10, 3.11, 3.12, 3.13, and 3.14. This isn't a plain list — two
+distinct mechanisms combine here:
 
-- Python 3.9
-- Python 3.10
-- Python 3.11
-- Python 3.12
+**`fail-fast: false`**: if one version fails, the others keep going. Without this setting, GitHub Actions
+cancels every remaining matrix job by default as soon as the first one fails — which would hide
+compatibility issues on other versions.
 
-This means the `test` job will run **4 times in parallel**, once for each Python
-version, ensuring your code's compatibility across these different versions.
+**`continue-on-error: true` on 3.14 only**: Python 3.14 is deliberately isolated from the overall verdict.
+A failure on this version surfaces as a visual warning (⚠️), not as a blocking pipeline failure — it's a
+compatibility signal to watch on a still-recent version, not a regression to fix urgently on the versions
+actually supported.
 
-Using a matrix allows you to:
-
-- add new versions of Python such as version `"3.13"` or `"3.14"` (as of
-  November 2025)
-- remove obsolete versions such as `"3.2"`
-- use other runtime environments such as PyPy
-
-In this _GitHub Action Workflow_, the choice is simply the standard Python
-interpreter
-
-```yaml
-jobs:
-  test:
-    `[...]`
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+```mermaid
+flowchart LR
+    Q["Python CI - Quality\n✅ success"] --> M["Test matrix"]
+    M --> P310["py310"]
+    M --> P311["py311"]
+    M --> P312["py312"]
+    M --> P313["py313"]
+    M --> P314["py314\n(continue-on-error)"]
 ```
 
-### Execution Environment
+## Detailed pipeline steps
+
+### Step 1: Checking out the source code
 
 ```yaml
-jobs:
-  test:
-    name: Run tests on Python ${{ matrix.python-version }}
-    runs-on: ubuntu-latest
+- name: Checkout code
+  uses: actions/checkout@v6
+  with:
+    ref: ${{ github.event.workflow_run.head_sha }}
 ```
 
-- **Operating System**: Ubuntu (latest available version)
-- **Runner**: Virtual machine provided by GitHub Actions
+**The `ref` parameter is essential here.** A pipeline triggered by `workflow_run` runs by default in the
+context of the repository's default branch — not the branch that triggered the Quality pipeline. Without
+this parameter, the wrong code would be tested.
 
-## Detailed Pipeline Steps
+`head_sha` rather than `head_branch`: we target the **exact commit** that triggered Quality, not just the
+branch name. If other commits are pushed to the same branch between Quality triggering and Tests running,
+`head_sha` guarantees we're testing the commit that Quality actually validated, not a later, potentially
+different one.
 
-### Step 1: Source Code Checkout
-
-```yaml
-- name: Checkout repository
-  uses: actions/checkout@v4
-```
-
-This step clones your Git repository into the execution environment. It uses the
-official `checkout` action version 4, which downloads all the source code needed
-to run the tests.
-
-### Step 2: Python Setup
+### Step 2: Setting up Python (matrix version)
 
 ```yaml
-- name: Setup Python ${{ matrix.python-version }}
-  uses: actions/setup-python@v4
+- name: Set up Python ${{ matrix.python-version }}
+  uses: actions/setup-python@v5
   with:
     python-version: ${{ matrix.python-version }}
 ```
 
-This step installs the specific Python version defined by the matrix. The
-`${{ matrix.python-version }}` variable takes each defined value (3.9, 3.10,
-3.11, 3.12) successively for each parallel execution.
+Installs the Python version specific to this matrix job.
 
-### Step 3: Dependencies Installation
+### Step 3: Installing uv and tox
 
 ```yaml
-- name: Install dependencies
-  run: |
-    python -m pip install --upgrade pip
-    pip install tox
+- name: Install uv
+  uses: astral-sh/setup-uv@v4
+
+- name: Install tox
+  run: uv pip install --system tox tox-uv
 ```
 
-This step prepares the testing environment by:
+Identical to the Quality pipeline — see
+[Quality pipeline](./quality.en.md#step-3-installing-uv-and-tox).
 
-1. Upgrading `pip` to its latest version to avoid compatibility issues
-2. Installing `tox`, a test automation tool that manages virtual environments
-   and test execution
-
-### Step 4: Running Tests
+### Step 4: Running the tests with tox
 
 ```yaml
 - name: Run tests with tox
-  run: tox -e gh-ci
+  run: |
+    PYVER=$(echo "${{ matrix.python-version }}" | tr -d '.')
+    tox -e py${PYVER}
 ```
 
-This final step launches the tests using `tox` with the `gh-ci` (GitHub CI)
-environment. Tox will:
-
-- Create an isolated virtual environment
-- Install test dependencies defined in your `tox.ini` configuration
-- Execute the test suite
-- Report the results (success or failure)
+The matrix version (`3.12`) is turned into a tox environment name (`py312`) by stripping the dot —
+`tr -d '.'`. Each job runs the tox environment matching exactly its Python version, defined in `tox.ini` —
+see [Tox configuration](../tests/python/tox.en.md#testenv--default-test-environment).
 
 ## Result
 
-If all tests pass across the 4 Python versions, the pipeline is marked as
-**successful** ✅
+If the four mandatory versions (3.10 to 3.13) succeed, the pipeline is marked **successful** ✅ and
+triggers the [Coverage](../coverage/python/coverage.en.md) pipeline — but only on `staging/**` and the main
+branch, see that document for the detail. A failure on 3.14 alone doesn't prevent this trigger, thanks to
+`continue-on-error`.
 
-![Successful execution of the test process](../../pictures/python-test.png)
+## See also
 
-If at least one test fails on any Python version, the pipeline is marked as
-**failed** ❌, and you will receive a notification to fix the issue before
-merging the code.
+- [Quality pipeline](./quality.en.md) — trigger of this one
+- [Coverage pipeline](../coverage/python/coverage.en.md) — triggered by this one
+- [Tox configuration](../tests/python/tox.en.md)
+- [Tests pipeline — version française](./tests.fr.md)

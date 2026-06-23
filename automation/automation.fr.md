@@ -1,6 +1,6 @@
 # Automatisation des tests
 
-← [README](../README.md) | _English version → [automation.md](automation.md)_
+← [README](../README.md) | _English version → [automation.en.md](automation.en.md)_
 
 ## Vue d'ensemble
 

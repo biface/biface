@@ -13,7 +13,7 @@ qualité du code, tests, couverture, et — à terme — déploiement.
 Les pipelines décrits dans cette documentation répondent à plusieurs objectifs :
 
 - **Automatisation** : réduire l'intervention manuelle en automatisant les tâches répétitives, [comme les
-  tests](../automation.md), et à terme le déploiement
+  tests](../automation.fr.md), et à terme le déploiement
 - **Assurance qualité** : garantir la qualité et la compatibilité du code avant toute fusion
 - **Intégration continue** : valider chaque changement automatiquement pour détecter les problèmes tôt
 - **Cohérence** : maintenir des processus standardisés sur toutes les branches

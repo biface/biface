@@ -4,7 +4,7 @@
 name: Python CI - Tests
 ```
 
-← [Pipelines](./pipelines.md) | ← [Pipeline Qualité](./quality.fr.md)
+← [Pipelines](./pipelines.fr.md) | ← [Pipeline Qualité](./quality.fr.md)
 
 ## Vue d'ensemble
 

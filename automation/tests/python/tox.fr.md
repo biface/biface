@@ -1,6 +1,6 @@
 # Configuration Tox — Guide de référence
 
-← [Automation](../../automation.md)
+← [Automation](../../automation.fr.md)
 
 ## Présentation
 

@@ -4,7 +4,7 @@
 name: Python CI - Quality
 ```
 
-← [Pipelines](./pipelines.md)
+← [Pipelines](./pipelines.fr.md)
 
 ## Vue d'ensemble
 

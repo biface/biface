@@ -4,7 +4,7 @@
 name: Python CI - Coverage
 ```
 
-← [Pipelines](../../pipelines/pipelines.md) | ← [Pipeline Tests](../../pipelines/tests.fr.md)
+← [Pipelines](../../pipelines/pipelines.fr.md) | ← [Pipeline Tests](../../pipelines/tests.fr.md)
 
 Le nom du pipeline importe pour le chaînage automatisé — c'est lui qui est référencé dans le `workflows:`
 du déclencheur `workflow_run` qui suit dans la chaîne.
