@@ -263,7 +263,7 @@ Choisir une version de référence stable (`py312`) garantit des rapports cohér
 temps. La répartition des responsabilités est donc :
 
 | Script          | Question posée                                               | Versions                                   |
-| --------------- | ------------------------------------------------------------ | ------------------------------------------ |
+|-----------------|--------------------------------------------------------------|--------------------------------------------|
 | `test.bash`     | Le code fonctionne-t-il sur toutes les versions supportées ? | Toutes celles de `versions.txt`            |
 | `coverage.bash` | Quelle proportion du code est testée ?                       | Une seule, celle de `coverage-version.txt` |
 
@@ -342,7 +342,7 @@ $ ./coverage.bash
 ## Gestion des erreurs
 
 | Erreur                                            | Gestion           | Comportement                                              |
-| ------------------------------------------------- | ----------------- | --------------------------------------------------------- |
+|---------------------------------------------------|-------------------|-----------------------------------------------------------|
 | Fichier `coverage-version.txt` absent             | Fallback          | Utilise `py312`                                           |
 | Fichier vide ou ne contenant que des commentaires | Fallback          | `coverage_env` reste à sa valeur par défaut `py312`       |
 | `tox -e coverage` échoue                          | Arrêt immédiat    | Log + `return 1` + `exit 1`                               |
