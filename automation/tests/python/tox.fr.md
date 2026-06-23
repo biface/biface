@@ -11,6 +11,12 @@ la base du workflow qualité de référence.
 Le fichier `tox.ini` centralise la définition de tous les environnements : tests, vérifications qualité, formatage,
 sécurité, workflows complets. Une seule source de vérité, utilisable identiquement en local et en CI/CD.
 
+> **Modèle prêt à copier** : [`shared/tox.ini`](../../../shared/tox.ini) et
+> [`shared/tox-config/`](../../../shared/tox-config/) dans ce dépôt. Pour adopter cette configuration dans
+> un projet : copier les deux, renommer `tox-config/` en `.tox-config/` (avec le point), remplacer
+> `<package_name>` par le nom réel du paquet dans `tox.ini`, `coverage.sh.txt`/`test.sh.txt` (à renommer en
+> `.sh`), et ajuster les versions Python dans `envlist`, `[gh-actions]` et `.tox-config/versions.txt`.
+
 ---
 
 ## Architecture `.tox-config/`
@@ -18,7 +24,7 @@ sécurité, workflows complets. Une seule source de vérité, utilisable identiq
 La configuration est séparée du fichier `tox.ini` dans un répertoire dédié. Cela permet de modifier les
 versions Python testées ou les dépendances sans toucher à `tox.ini`.
 
-```
+```text
 .tox-config/
 ├── versions.txt          ← versions Python à tester (une par ligne, # pour commenter)
 ├── coverage-version.txt  ← version Python pour le rapport de couverture

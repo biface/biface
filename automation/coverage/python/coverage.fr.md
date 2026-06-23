@@ -128,7 +128,7 @@ atteint ou une indisponibilité de Codecov est donc un signal bloquant, pas une 
 
 ## Flux de travail complet
 
-```
+```text
 1. Push sur une branche staging/** ou main
    ↓
 2. Pipeline "Python CI - Quality" — doit réussir
