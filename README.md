@@ -15,7 +15,10 @@ test pipelines, and experiment with CI/CD workflows, and remain platform-agnosti
 - [**Automata**](https://github.com/biface/automata) — a study of automata, languages, and formal grammars
 - [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more
 - [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, with support for multiple translations and plural forms
-- **Upcoming** — projects related to frameworks like Django
+
+## Python projects with frameworks
+
+- [**Clade**](https://gitlab.com/open-works/clade) — A [Django-based](https://www.djangoproject.com/) module for building and managing hierarchical data models
 
 ### Rust projects
 
