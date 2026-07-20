@@ -9,32 +9,53 @@ test pipelines, and experiment with CI/CD workflows, and remain platform-agnosti
 
 ---
 
-### Python projects
+## What I work on
 
-- [**Nested dictionaries**](https://github.com/biface/ndt) — an implementation of nested dictionaries with support for key hierarchies
-- [**Automata**](https://github.com/biface/automata) — a study of automata, languages, and formal grammars
-- [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more
-- [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, with support for multiple translations and plural forms
+Rather than group projects by language, here they are grouped by the problem each one addresses—several of them
+share code or dependencies across languages, but the themes below are about the *subject*, not the implementation.
 
-## Python projects with frameworks
+### Data structures & content representation
 
-- [**Clade**](https://gitlab.com/open-works/clade) — A [Django-based](https://www.djangoproject.com/) module for building and managing hierarchical data models
+Organising and structuring data—from generic, language-level building blocks up to a specific applied domain
+(multilingual content).
 
-### Rust projects
+- [**Nested dictionaries**](https://github.com/biface/ndt) — an implementation of nested dictionaries with support
+  for key hierarchies, published on [pypi.org](https://pypi.org/project/ndict-tools/) and documented on
+  [Read the Docs](https://ndict-tools.readthedocs.io/)
+- [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more, not
+  yet published on [pypi.org](https://pypi.org/)
+- [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, structuring multilingual content
+  with support for multiple translations and plural forms, published on
+  [pypi.org](https://pypi.org/project/pyi18t-tools/)
+- [**Clade**](https://gitlab.com/open-works/clade) — a [Django-based](https://www.djangoproject.com/) module for
+  building and managing hierarchical data models, published on [pypi.org](https://pypi.org/project/django-clade/)
 
-For several months now, I have been exploring Rust as a potential successor to C — resuming work I stopped about thirty
-years ago:
+### Formal languages & computation theory
+
+- [**Automata**](https://github.com/biface/automata) — a study of automata, languages, and formal grammars, published
+  on [pypi.org](https://pypi.org/project/fsm-tools/) and documented on [Read the Docs](https://fsm-tools.readthedocs.io/)
+
+### Scientific computing — chromatography
+
+For several months now, I have been exploring Rust as a potential successor to C—resuming work I stopped about
+thirty years ago—applied to a specific physical/chemical domain.
+
+- [**Oxiflow**](https://github.com/biface/oxiflow) — published on [crates.io](https://crates.io/crates/oxiflow)
+- [**Chromatography**](https://github.com/biface/chromatography) — published on [crates.io](https://crates.io/crates/chrom-rs)
+
+### Tooling & automation
+
+Tools built to support the other projects, rather than a domain of their own.
 
 - [**Dynamic CLI**](https://github.com/biface/dcli) — also published on [crates.io](https://crates.io/crates/dynamic-cli)
-- [**Chromatography**](https://github.com/biface/chromatography) — published on [crates.io](https://crates.io/crates/chrom-rs)
-- [**Oxiflow**](https://github.com/biface/oxiflow) — reserved on [crates.io](https://crates.io/crates/oxiflow), not yet developed
 
 ---
 
-### Automation & documentation
+This repository also serves as the **reference implementation** for test automation methods and CI/CD pipelines used
+across my projects. The methodology is documented in the [biface wiki](https://gitlab.com/biface/biface/-/wikis/home);
+the concrete configuration files and their explanations live here.
 
-Test automation methods, CI/CD pipelines, and shared configuration references are documented on my personal GitLab
-repository → [biface.wiki](https://gitlab.com/biface/biface/-/wikis/home)
+→ Automation reference: [Français](automation/automation.fr.md) · [English](automation/automation.en.md)
 
 ---
 
