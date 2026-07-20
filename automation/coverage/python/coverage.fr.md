@@ -4,7 +4,12 @@
 name: Python CI - Coverage
 ```
 
-← [Pipelines](../../pipelines/pipelines.fr.md) | ← [Pipeline Tests](../../pipelines/tests.fr.md)
+← [Pipelines](../../pipelines/pipelines.fr.md) | ← [Pipeline Tests](../../pipelines/workflow-run/tests.fr.md)
+
+> **Modèle prêt à copier** :
+> [`shared/github-ci/coverage/python-ci-coverage.yaml`](../../../shared/github-ci/coverage/python-ci-coverage.yaml).
+> Le `workflows: ["Python CI - Tests"]` doit correspondre exactement au `name:` du fichier Tests. Ajuster la
+> liste `branches:` selon la convention de nommage des branches de release du projet.
 
 Le nom du pipeline importe pour le chaînage automatisé — c'est lui qui est référencé dans le `workflows:`
 du déclencheur `workflow_run` qui suit dans la chaîne.
@@ -12,7 +17,7 @@ du déclencheur `workflow_run` qui suit dans la chaîne.
 ## Vue d'ensemble
 
 Ce pipeline GitHub Actions mesure la couverture de code et télécharge automatiquement le rapport vers
-Codecov. Il s'exécute **après** le pipeline [Tests](../../pipelines/tests.fr.md), et uniquement si celui-ci
+Codecov. Il s'exécute **après** le pipeline [Tests](../../pipelines/workflow-run/tests.fr.md), et uniquement si celui-ci
 a réussi — et uniquement sur les branches où la couverture a un sens pour la décision de release.
 
 ## Déclenchement du pipeline
@@ -147,6 +152,6 @@ atteint ou une indisponibilité de Codecov est donc un signal bloquant, pas une 
 
 ## Voir aussi
 
-- [Pipeline Tests](../../pipelines/tests.fr.md) — déclencheur de celui-ci
+- [Pipeline Tests](../../pipelines/workflow-run/tests.fr.md) — déclencheur de celui-ci
 - [Configuration tox § coverage](../../tests/python/tox.fr.md)
 - [Coverage pipeline — English version](./coverage.en.md)

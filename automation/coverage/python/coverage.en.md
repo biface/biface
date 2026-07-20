@@ -4,7 +4,7 @@
 name: Python CI - Coverage
 ```
 
-← [Pipelines](../../pipelines/pipelines.en.md) | ← [Tests pipeline](../../pipelines/tests.en.md)
+← [Pipelines](../../pipelines/pipelines.en.md) | ← [Tests pipeline](../../pipelines/workflow-run/tests.en.md)
 
 The pipeline name matters for the automated chaining — it's the one referenced in the `workflows:` of the
 `workflow_run` trigger that follows in the chain.
@@ -12,7 +12,7 @@ The pipeline name matters for the automated chaining — it's the one referenced
 ## Overview
 
 This GitHub Actions pipeline measures code coverage and automatically uploads the report to Codecov. It
-runs **after** the [Tests](../../pipelines/tests.en.md) pipeline, and only if that one succeeded — and only
+runs **after** the [Tests](../../pipelines/workflow-run/tests.en.md) pipeline, and only if that one succeeded — and only
 on branches where coverage makes sense for the release decision.
 
 ## Pipeline trigger
@@ -145,6 +145,6 @@ Codecov unavailability is therefore a blocking signal, not a silently ignored al
 
 ## See also
 
-- [Tests pipeline](../../pipelines/tests.en.md) — trigger of this one
+- [Tests pipeline](../../pipelines/workflow-run/tests.en.md) — trigger of this one
 - [Tox configuration § coverage](../../tests/python/tox.en.md)
 - [Coverage pipeline — version française](./coverage.fr.md)
