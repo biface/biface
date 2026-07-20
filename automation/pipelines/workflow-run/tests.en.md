@@ -6,6 +6,11 @@ name: Python CI - Tests
 
 ← [Pipelines](../pipelines.en.md) | ← [Quality pipeline](./quality.en.md)
 
+> **Ready-to-copy template**:
+> [`shared/github-ci/workflow-run/python-ci-tests.yaml`](../../../shared/github-ci/workflow-run/python-ci-tests.yaml).
+> The `workflows: ["Python CI - Quality"]` must match the Quality file's `name:` field exactly — see the
+> note at the top of the template file. Adjust the Python version matrix to the project's needs.
+
 ## Overview
 
 This GitHub Actions pipeline runs the test suite across several Python versions. It **only** triggers if
@@ -151,4 +156,6 @@ branch, see that document for the detail. A failure on 3.14 alone doesn't preven
 - [Quality pipeline](./quality.en.md) — trigger of this one
 - [Coverage pipeline](../../coverage/python/coverage.en.md) — triggered by this one
 - [Tox configuration](../../tests/python/tox.en.md)
+- [Tests — reinforced model (.tox-config, multi-environment)](./test-uv.en.md) — alternative, more
+  elaborate approach, kept as an example, abandoned in favor of the one documented here
 - [Tests pipeline — version française](./tests.fr.md)

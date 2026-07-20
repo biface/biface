@@ -64,32 +64,61 @@ Success/failure notification
 
 ---
 
+## Two pipeline architectures
+
+The GitHub Actions pipelines documented in this repository follow one of two architectures —
+**event-driven multi-file chaining** (`workflow_run`) or **single-file dependency chaining** (`needs:`).
+The choice between the two isn't tied to the project's language: both models coexist on the Python side
+as well as the Rust side. The detail of both architectures, with their respective advantages and
+limitations, is explained in [Two pipeline architectures](architecture/ci-models.en.md).
+
+---
+
 ## Structure of this repository
 
 ```text
 biface/biface
-├── shared/                        ← reusable configuration files
-│   ├── tox.ini                    ← reference tox configuration
-│   ├── tox-config/                ← tox usage configuration
+├── shared/                          ← reusable configuration files
+│   ├── tox.ini                      ← reference tox configuration (Python)
+│   ├── tox-config/                  ← tox usage configuration
 │   │   ├── requirements/
 │   │   ├── versions.txt
 │   │   ├── coverage-version.txt
 │   │   └── scripts/
 │   │       ├── test.sh
 │   │       └── coverage.sh
+│   ├── github-ci/                   ← reference GitHub Actions workflows
+│   │   ├── workflow-run/
+│   │   │   ├── python-ci-quality.yaml
+│   │   │   └── python-ci-tests.yaml
+│   │   ├── needs/
+│   │   │   ├── python-ci.yaml
+│   │   │   └── rust-ci.yml
+│   │   └── coverage/
+│   │       ├── python-ci-coverage.yaml
+│   │       └── rust-coverage.yml
 │   └── issue-templates/
-│       └── github/                ← GitHub issue templates
+│       └── github/                  ← GitHub issue templates
 └── automation/
-    ├── automation.en.md           ← this page
+    ├── automation.en.md             ← this page
+    ├── architecture/
+    │   └── ci-models.en.md          ← the two pipeline architectures, independent of language
     ├── pipelines/
-    │   ├── pipelines.en.md        ← overview of GitHub Actions pipelines
-    │   ├── quality.en.md          ← Python CI - Quality pipeline
-    │   └── tests.en.md            ← Python CI - Tests pipeline
-    ├── coverage/python/
-    │   └── coverage.en.md         ← Python CI - Coverage pipeline
+    │   ├── pipelines.en.md          ← overview of GitHub Actions pipelines
+    │   ├── workflow-run/            ← model 1: event-driven multi-file chaining
+    │   │   ├── quality.en.md
+    │   │   ├── tests.en.md
+    │   │   └── test-uv.en.md        ← reinforced model (.tox-config), kept as an example
+    │   └── needs/                   ← model 2: single-file dependency chaining
+    │       └── pipeline.en.md
+    ├── coverage/
+    │   ├── python/
+    │   │   └── coverage.en.md       ← coverage pipeline, workflow_run model
+    │   └── rust/
+    │       └── coverage.en.md       ← coverage pipeline, independent workflow
     └── tests/
         ├── python/
-        │   └── tox.en.md          ← tox configuration explained
+        │   └── tox.en.md           ← tox configuration explained
         └── shell/
             ├── tox-uv-test-script.en.md      ← test.sh script explained
             └── tox-uv-coverage-script.en.md  ← coverage.sh script explained
@@ -97,23 +126,28 @@ biface/biface
 
 ## How to use this repository
 
-The files under `shared/` are designed to be copied into any Python project and adapted with minimal
-changes — see [Tox configuration](tests/python/tox.en.md) for the full procedure (copying `tox.ini`, the
-`requirements/`, the scripts, adapting the package name).
+The files under `shared/` are **real, ready-to-copy templates** — not documentation to transcribe by hand:
 
-The GitHub Actions pipelines that consume this configuration are documented in
-[pipelines/pipelines.en.md](pipelines/pipelines.en.md) — that's where the detail of how each
-`.github/workflows/*.yaml` workflow invokes `tox`, and in what order, lives.
+- `tox.ini` + `tox-config/`: reference tox configuration for a Python project — see
+  [Tox configuration](tests/python/tox.en.md) for the full procedure (copying, adapting the package name,
+  the versions).
+- `github-ci/`: the GitHub Actions workflows themselves, one per architecture and per implementation
+  (`workflow-run/`, `needs/`, `coverage/`) — each page in [pipelines/](pipelines/pipelines.en.md) explains
+  the pipeline in detail **and** links to the corresponding real file to copy into `.github/workflows/`.
+
+Every file under `github-ci/` carries a header comment block listing precisely what to adapt for the
+target project (package name, versions, Cargo features…), on the same principle as `tox.ini`.
 
 ---
 
 ## Validated on
 
-| Project                                  | Registry                                      |
-|------------------------------------------|-----------------------------------------------|
-| [ndt](https://github.com/biface/ndt)     | [PyPI](https://pypi.org/project/ndict-tools/) |
-| [sds](https://github.com/skyfrigate/sds) | —                                             |
-| [i18n](https://github.com/biface/i18n)   | —                                             |
+| Project | Registry | CI model |
+| --- | --- | --- |
+| [ndt](https://github.com/biface/ndt) | [PyPI](https://pypi.org/project/ndict-tools/) | `workflow_run` |
+| [i18n](https://github.com/biface/i18n) | [PyPI](https://pypi.org/project/pyi18t-tools/) | `needs:` |
+| [oxiflow](https://github.com/biface/oxiflow) | [crates.io](https://crates.io/crates/oxiflow) | `needs:` |
+| [sds](https://github.com/skyfrigate/sds) | — | — |
 
 ---
 

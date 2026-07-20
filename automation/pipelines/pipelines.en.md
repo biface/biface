@@ -1,10 +1,12 @@
-# CI/CD Pipelines Documentation
+# CI/CD Pipeline Documentation
+
+← [Test automation](../automation.en.md)
 
 ## Introduction
 
 This documentation explains in detail the GitHub Actions workflows (or simply "pipelines") used in my
 projects. These pipelines automate the critical aspects of the development cycle: code quality, tests,
-coverage, and — eventually — deployment.
+coverage, and build/publish.
 
 **Note:** _Version française → [pipelines.fr.md](pipelines.fr.md)_
 
@@ -13,34 +15,33 @@ coverage, and — eventually — deployment.
 The pipelines described in this documentation serve several purposes:
 
 - **Automation**: reduce manual intervention by automating repetitive tasks, [like testing](../automation.en.md),
-  and eventually deployment
+  and build/publish
 - **Quality assurance**: guarantee code quality and compatibility before any merge
 - **Continuous integration**: automatically validate every change to catch problems early
-- **Consistency**: maintain standardised processes across every branch
+- **Consistency**: maintain standardized processes across all branches
 - **Reliability**: give developers fast feedback on the state of their changes
 
-## Pipeline overview
+## Two architectures
 
-The following pipelines are documented in this repository, in the order they chain together:
+The pipelines in this repository follow one of two architectures — see
+[Two pipeline architectures](../architecture/ci-models.en.md) for the full conceptual detail and
+comparison. In summary:
 
-1. **Python CI - Quality** → [quality.en.md](quality.en.md) — type checking, lint, formatting, and
-   security checks, the first link in the chain; every following pipeline depends on it
-2. **Python CI - Tests** → [tests.en.md](tests.en.md) — runs the test suite across several Python
-   versions, only triggered if Quality succeeded
-3. **Python CI - Coverage** → [../coverage/python/coverage.en.md](../coverage/python/coverage.en.md) —
-   measures code coverage and publishes it to Codecov, only triggered on `staging/**` and the main branch
-
-_(Build and publishing pipelines will be documented in a future iteration.)_
+1. **[workflow-run/](workflow-run/pipelines.en.md)** — event-driven multi-file chaining
+   (`workflow_run`). Each step (Quality, Tests, Coverage) lives in its own workflow file, triggered by the
+   completion of the previous one.
+2. **[needs/](needs/pipeline.en.md)** — single-file dependency chaining (`needs:`). All steps live in a
+   single file, with two implementations documented side by side to show that it's the length of the
+   chain — not the language — that varies from one project to another.
 
 ## How to use this documentation
 
 Each pipeline is documented with:
 
 - An overview of its purpose
-- Trigger conditions (when it runs)
-- A detailed, step-by-step explanation of each action
-- Expected outcomes
+- The trigger conditions (when it runs)
+- A detailed step-by-step explanation of each action
+- The expected results
 
-Browse the pages above to explore each pipeline in detail. The `tox` configuration shared by these three
-pipelines is documented separately in
-[Tox configuration](../tests/python/tox.en.md).
+Browse the two subfolders above to explore each architecture in detail. The `tox` configuration shared by
+the Python pipelines is documented separately in [Tox configuration](../tests/python/tox.en.md).

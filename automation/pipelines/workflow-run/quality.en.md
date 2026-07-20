@@ -6,6 +6,11 @@ name: Python CI - Quality
 
 ← [Pipelines](../pipelines.en.md)
 
+> **Ready-to-copy template**:
+> [`shared/github-ci/workflow-run/python-ci-quality.yaml`](../../../shared/github-ci/workflow-run/python-ci-quality.yaml).
+> To adopt it: copy as-is into the project's `.github/workflows/` and adjust the reference Python version if
+> needed. Assumes a `tox.ini` modelled on [`shared/tox.ini`](../../../shared/tox.ini).
+
 ## Overview
 
 This GitHub Actions pipeline is the **first link** in the CI/CD chain. It checks that the code meets basic
