@@ -1,0 +1,143 @@
+# ==============================================================================
+# rust-ci.yml — Reference configuration (needs: model, short chain)
+# ==============================================================================
+#
+# Single-file pipeline: fmt -> clippy & test (both depend on fmt only, so run
+# in parallel) -> doc (depends on both, main branch only).
+#
+# Adapt the following values to your project:
+#   - Replace <feature_name> with your crate's actual Cargo feature(s); if
+#     your crate has no optional features, drop the "— feature <feature_name>"
+#     steps and keep only the default-features ones
+#   - Replace <crate_name> in the doc redirect with your workspace's default
+#     crate (the one `cargo doc`'s index.html should redirect to)
+#   - Replace `master` with your default branch if different
+#
+# ==============================================================================
+
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # Format — checks that code conforms to rustfmt
+  # ────────────────────────────────────────────────────────────────────────────
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: cargo fmt --check
+        run: cargo fmt --check
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Clippy — zero warnings allowed
+  # ────────────────────────────────────────────────────────────────────────────
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    needs: fmt
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/
+          key: ${{ runner.os }}-clippy-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-clippy-
+
+      - name: cargo clippy — default features
+        run: cargo clippy -- -D warnings
+
+      - name: cargo clippy — feature <feature_name>
+        run: cargo clippy --features <feature_name> -- -D warnings
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Test — unit, integration and doc-test suite
+  # ────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: fmt
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/
+          key: ${{ runner.os }}-test-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-test-
+
+      - name: cargo test — default features
+        run: cargo test
+
+      - name: cargo test — feature <feature_name>
+        run: cargo test --features <feature_name>
+
+      - name: cargo test — doc examples
+        run: cargo test --doc
+
+      - name: cargo test — doc examples (feature <feature_name>)
+        run: cargo test --doc --features <feature_name>
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Doc — generation and deployment to GitHub Pages
+  # Triggered on push to the default branch only
+  # ────────────────────────────────────────────────────────────────────────────
+  doc:
+    name: Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    needs: [clippy, test]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/
+          key: ${{ runner.os }}-doc-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-doc-
+
+      - name: cargo doc
+        run: cargo doc --no-deps --document-private-items
+
+      - name: Add root redirect to <crate_name>/index.html
+        run: |
+          echo '<meta http-equiv="refresh" content="0; url=<crate_name>/index.html">' \
+            > target/doc/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
+          enable_jekyll: false

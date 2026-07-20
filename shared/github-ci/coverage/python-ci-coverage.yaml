@@ -1,0 +1,59 @@
+# ==============================================================================
+# python-ci-coverage.yaml — Reference configuration (workflow_run model, step 3/3)
+# ==============================================================================
+#
+# Triggered by the completion of python-ci-tests.yaml via `workflow_run`,
+# restricted to release-relevant branches only.
+#
+# Adapt the following values to your project:
+#   - `workflows: ["Python CI - Tests"]` must match the `name:` field of
+#     python-ci-tests.yaml exactly
+#   - Adjust the `branches:` list to your own release-candidate/production
+#     branch naming
+#   - `tox -e coverage` assumes a tox.ini modelled on shared/tox.ini
+#   - `CODECOV_TOKEN` must exist as a repository secret
+#
+# ==============================================================================
+
+name: Python CI - Coverage
+
+on:
+  workflow_run:
+    workflows: ["Python CI - Tests"]
+    types:
+      - completed
+    branches:
+      - "staging/**"   # release candidates
+      - master         # production
+
+jobs:
+  coverage:
+    name: Upload coverage to Codecov
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        ref: ${{ github.event.workflow_run.head_sha }}
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+
+    - name: Install tox
+      run: uv pip install --system tox tox-uv
+
+    - name: Run tests with coverage
+      run: tox -e coverage
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: true

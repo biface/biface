@@ -1,0 +1,115 @@
+# ==============================================================================
+# rust-coverage.yml — Reference configuration (independent workflow)
+# ==============================================================================
+#
+# Generates and publishes the code coverage report to codecov.io using
+# cargo-llvm-cov. Independent of ci.yml (see ../needs/rust-ci.yml) — no
+# workflow_run, no needs: — it simply triggers on its own push/pull_request
+# events, in parallel with the main pipeline.
+#
+# Adapt the following values to your project:
+#   - Replace <feature_name> with your crate's actual Cargo feature(s); if
+#     your crate has no optional features, drop the "— feature <feature_name>"
+#     run and keep only the default-features one
+#   - Duplicate the "Generate code coverage" step once per feature
+#     combination you want measured separately
+#   - Replace `master` with your default branch if different
+#   - `CODECOV_TOKEN` must exist as a repository secret
+#
+# ==============================================================================
+
+name: Code Coverage
+
+on:
+  push:
+    branches:
+      - master
+      - 'feature/**'      # all feature/* branches
+  pull_request:
+    branches:
+      - master
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  coverage:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: llvm-tools-preview
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache cargo index
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-index-
+
+      - name: Cache cargo build
+        uses: actions/cache@v4
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      # ── Run 1 : default features ──────────────────────────────────────────
+      - name: Generate code coverage — default features
+        run: |
+          cargo llvm-cov --all-targets --workspace \
+            --lcov --output-path lcov-default.info
+
+      # ── Run 2 : <feature_name> feature ──────────────────────────────────────
+      # Uses --features <feature_name> rather than --all-features so that the
+      # umbrella report stays scoped to currently declared features; add one
+      # more "Generate code coverage" step per additional feature.
+      - name: Generate code coverage — feature <feature_name>
+        run: |
+          cargo llvm-cov --all-targets --features <feature_name> --workspace \
+            --lcov --output-path lcov-<feature_name>.info
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: lcov-default.info,lcov-<feature_name>.info
+          fail_ci_if_error: false
+          flags: unittests
+          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: |
+            lcov-default.info
+            lcov-<feature_name>.info
+          retention-days: 30
+
+      - name: Display coverage summary
+        run: |
+          echo "📊 Coverage Report Generated"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "View detailed report at: https://codecov.io/gh/${{ github.repository }}"

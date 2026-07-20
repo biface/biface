@@ -1,0 +1,354 @@
+# ==============================================================================
+# python-ci.yaml — Reference configuration (needs: model, long chain)
+# ==============================================================================
+#
+# Single-file pipeline: one workflow file, jobs chained via `needs:` instead
+# of the multi-file workflow_run design (see ../workflow-run/).
+#
+# Sequence: quality -> test-unit -> test-integration -> coverage -> build ->
+# publish-pypi / publish-testpypi. test-integration / coverage / build /
+# publish are restricted to tags only.
+#
+# Adapt the following values to your project:
+#   - Replace <package_name> with your actual package/import name
+#     (e.g. ndict_tools)
+#   - Replace <service-name>/<service-image>/<port>/<SERVICE_BASE_URL> under
+#     test-integration/coverage with your own external-service dependency
+#     (e.g. httpbin / ghcr.io/mccutchen/go-httpbin / 8080 — a lightweight HTTP
+#     test server, used as a concrete example here), or remove the
+#     `services:`/`env:` blocks entirely if your integration tests need no
+#     external service
+#   - Adjust the Python version(s) and matrix to your project's supported
+#     versions
+#   - `PYPI_API_TOKEN` / `TEST_PYPI_API_TOKEN` / `CODECOV_TOKEN` must exist as
+#     repository secrets
+#
+# ==============================================================================
+
+name: Python CI
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Quality — basedpyright, flake8, black --check, isort --check, bandit
+  # ---------------------------------------------------------------------------
+  quality:
+    name: Quality checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install tox
+        run: uv pip install --system tox tox-uv
+
+      - name: Run quality checks
+        run: tox -e ci-quality
+
+  # ---------------------------------------------------------------------------
+  # Unit tests — matrix py310-py314, mocked (no network/timeout)
+  # ---------------------------------------------------------------------------
+  test-unit:
+    name: Unit tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    needs: quality
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+        experimental: [false]
+        include:
+          - python-version: "3.14"
+            experimental: true
+
+    continue-on-error: ${{ matrix.experimental }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install tox
+        run: uv pip install --system tox tox-uv
+
+      - name: Run unit tests
+        run: |
+          PYVER=$(echo "${{ matrix.python-version }}" | tr -d '.')
+          tox -e py${PYVER}
+
+  # ---------------------------------------------------------------------------
+  # Integration tests — real network dependency, tag-only
+  # ---------------------------------------------------------------------------
+  test-integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    needs: test-unit
+    if: startsWith(github.ref, 'refs/tags/')
+
+    # EXAMPLE service container — httpbin (ghcr.io/mccutchen/go-httpbin) is
+    # used here as a concrete illustration of an external-service dependency.
+    # Replace <service-name>/<service-image>/<port> with your own, or remove
+    # this block entirely if your integration tests need no external service.
+    services:
+      <service-name>:            # e.g. httpbin
+        image: <service-image>   # e.g. ghcr.io/mccutchen/go-httpbin
+        ports:
+          - <port>:<port>        # e.g. 8080:8080
+
+    env:
+      SERVICE_BASE_URL: http://127.0.0.1:<port>   # e.g. http://127.0.0.1:8080
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install tox
+        run: uv pip install --system tox tox-uv
+
+      - name: Run integration tests
+        run: tox -e integration
+
+  # ---------------------------------------------------------------------------
+  # Coverage — full suite, tag-only, uploaded to Codecov
+  # ---------------------------------------------------------------------------
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: test-integration
+    if: startsWith(github.ref, 'refs/tags/')
+
+    # Same external-service dependency as test-integration, if the full
+    # suite run by `coverage` also exercises it.
+    services:
+      <service-name>:
+        image: <service-image>
+        ports:
+          - <port>:<port>
+
+    env:
+      SERVICE_BASE_URL: http://127.0.0.1:<port>
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install tox
+        run: uv pip install --system tox tox-uv
+
+      - name: Run coverage
+        run: tox -e coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/coverage.xml
+          fail_ci_if_error: true
+
+  # ---------------------------------------------------------------------------
+  # Build — version consistency check + package build, tag-only
+  # ---------------------------------------------------------------------------
+  build:
+    name: Verify version and build package
+    runs-on: ubuntu-latest
+    needs: coverage
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build packaging
+
+      - name: Verify version consistency
+        id: version
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          python - <<'EOF'
+          import os
+          import re
+          import sys
+          import tomllib
+          from pathlib import Path
+
+          from packaging import version as pkg_version
+
+          # Version from the git tag (strip leading 'v')
+          tag = os.environ["GITHUB_REF_NAME"]
+          tag_version = tag.lstrip("v")
+
+          # Version from pyproject.toml
+          with open("pyproject.toml", "rb") as f:
+              pyproject_version = tomllib.load(f)["project"]["version"]
+
+          # Version from src/<package_name>/__static__.py
+          static_file = Path("src/<package_name>/__static__.py")
+          static_version = None
+          match = re.search(
+              r'__version__\s*=\s*["\']([^"\']+)["\']', static_file.read_text()
+          )
+          if match:
+              static_version = match.group(1)
+
+          print(f"Tag version:                   {tag_version}")
+          print(f"pyproject.toml:                {pyproject_version}")
+          print(f"src/<package_name>/__static__.py: {static_version}")
+
+          errors = []
+          if pkg_version.parse(tag_version) != pkg_version.parse(pyproject_version):
+              errors.append(
+                  f"Tag ({tag_version}) does not match pyproject.toml ({pyproject_version})"
+              )
+          if static_version is None:
+              errors.append("Could not find __version__ in src/<package_name>/__static__.py")
+          elif pkg_version.parse(tag_version) != pkg_version.parse(static_version):
+              errors.append(
+                  f"Tag ({tag_version}) does not match __static__.py ({static_version})"
+              )
+
+          if errors:
+              for e in errors:
+                  print(f"::error::{e}")
+              sys.exit(1)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"version={tag_version}\n")
+              f.write(f"tag={tag}\n")
+
+          print(f"✅ All versions consistent: {tag_version}")
+          EOF
+
+      - name: Build package
+        run: |
+          python -m build
+          echo "✅ Build completed"
+          ls -la dist/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+          retention-days: 7
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+
+  # ---------------------------------------------------------------------------
+  # Publish — final tags go to PyPI, rc tags go to TestPyPI
+  # ---------------------------------------------------------------------------
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, 'rc')
+
+    permissions:
+      contents: write   # required by softprops/action-gh-release to create the release
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          prerelease: false
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-testpypi:
+    name: Publish release candidate to TestPyPI
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, 'rc')
+
+    permissions:
+      contents: write   # required by softprops/action-gh-release to create the release
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          skip-existing: true
+
+      - name: Create GitHub pre-release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.build.outputs.tag }}
+          name: "RC — ${{ needs.build.outputs.tag }}"
+          prerelease: true
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,59 @@
+# ==============================================================================
+# python-ci-quality.yaml — Reference configuration (workflow_run model, step 1/3)
+# ==============================================================================
+#
+# First file of a 3-file workflow_run chain: quality -> tests -> coverage.
+# This file is self-contained (triggers on push/pull_request directly);
+# python-ci-tests.yaml then triggers on this workflow's completion — its
+# `workflows:` list must match the `name:` below exactly, or the chain breaks
+# silently.
+#
+# Adapt the following values to your project:
+#   - Adjust the Python version to your project's reference version
+#   - `tox -e ci-quality` assumes a tox.ini modelled on shared/tox.ini
+#
+# ==============================================================================
+
+name: Python CI - Quality
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install tox
+        run: |
+          uv pip install --system tox tox-uv
+
+      - name: Run quality checks
+        run: |
+          tox -e ci-quality
+
+      - name: Upload quality report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-report
+          path: |
+            .tox/ci-quality/log/
+          retention-days: 30
