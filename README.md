@@ -21,7 +21,11 @@ Organising and structuring data—from generic, language-level building blocks u
 
 - [**Nested dictionaries**](https://github.com/biface/ndt) — an implementation of nested dictionaries with support
   for key hierarchies, published on [pypi.org](https://pypi.org/project/ndict-tools/) and documented on
-  [Read the Docs](https://ndict-tools.readthedocs.io/)
+  [Read the Docs](https://ndict-tools.readthedocs.io/).
+
+  > This project is now entering the _maintenance phase_: I will focus primarily on correcting any errors that are identified or clarifying procedures. I may therefore release patches for previously published versions if I consider the fixes to be essential to the version.
+  >
+  >I will also keep up to date with Python releases; new versions will be released in the final quarter of the year.
 - [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more, not
   yet published on [pypi.org](https://pypi.org/)
 - [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, structuring multilingual content
