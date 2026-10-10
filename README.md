@@ -28,6 +28,9 @@ Organising and structuring data—from generic, language-level building blocks u
   >I will also keep up to date with Python releases; new versions will be released in the final quarter of the year.
 - [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more, not
   yet published on [pypi.org](https://pypi.org/)
+  > This project is first and foremost an exercise in relearning the fundamental algorithms of data structures. It is published for educational purposes and is not intended for use in production.
+  >
+  > This project also provided an opportunity to explore the generation of documentation using [`sphinx-doc`](https://www.sphinx-doc.org/en/master/) and the use of the documentation’s internationalisation features.
 - [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, structuring multilingual content
   with support for multiple translations and plural forms, published on
   [pypi.org](https://pypi.org/project/pyi18t-tools/)
