@@ -26,16 +26,13 @@ Organising and structuring data—from generic, language-level building blocks u
   > This project is now entering the _maintenance phase_: I will focus primarily on correcting any errors that are identified or clarifying procedures. I may therefore release patches for previously published versions if I consider the fixes to be essential to the version.
   >
   >I will also keep up to date with Python releases; new versions will be released in the final quarter of the year.
-- [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more, not
-  yet published on [pypi.org](https://pypi.org/)
+- [**Simple advanced Data Structures**](https://github.com/skyfrigate/sds) — graphs, trees, stacks, and more, published on [pypi.org](https://pypi.org/project/pysds-tools/) and documentation on [Read the Docs](https://pysds-tools.readthedocs.io/en/stable/)
   > This project is first and foremost an exercise in relearning the fundamental algorithms of data structures. It is published for educational purposes and is not intended for use in production.
   >
   > This project also provided an opportunity to explore the generation of documentation using [`sphinx-doc`](https://www.sphinx-doc.org/en/master/) and the use of the documentation’s internationalisation features.
-- [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, structuring multilingual content
-  with support for multiple translations and plural forms, published on
-  [pypi.org](https://pypi.org/project/pyi18t-tools/)
-- [**Clade**](https://gitlab.com/open-works/clade) — a [Django-based](https://www.djangoproject.com/) module for
-  building and managing hierarchical data models, published on [pypi.org](https://pypi.org/project/django-clade/)
+- [**Translation management**](https://github.com/biface/i18n) — inspired by Babel, structuring multilingual content with support for multiple translations and plural forms, published on [pypi.org](https://pypi.org/project/pyi18t-tools/)
+- [**Clade**](https://gitlab.com/open-works/clade) — a [Django-based](https://www.djangoproject.com/) module for building and managing hierarchical data models and published on [pypi.org](https://pypi.org/project/django-clade/) and also published as a Django component on [Django Packages](https://djangopackages.org/packages/p/clade/). Its documentation is available on [Read the Docs](https://clade.readthedocs.io/en/stable/index.html)
+### Formal languages & computation theory
 
 ### Formal languages & computation theory
 
